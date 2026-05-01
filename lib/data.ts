@@ -6,6 +6,7 @@ import {
   startOfDay,
   subDays
 } from "date-fns";
+import { unstable_cache } from "next/cache";
 
 import { formatClock, formatLongDate, relativeFromNow } from "@/lib/dates";
 import {
@@ -183,6 +184,87 @@ async function getProfileMap(userIds: string[]) {
   return new Map((data ?? []).map((item) => [item.id, item.full_name ?? "Alguien de la familia"]));
 }
 
+const getCachedHouseholdMembers = unstable_cache(
+  async (householdId: string) => {
+    const supabase = await getSupabaseServerClient();
+    const { data } = await supabase
+      .from("household_members")
+      .select("*, profiles(*)")
+      .eq("household_id", householdId)
+      .order("created_at", { ascending: true });
+
+    return (data ?? []) as HouseholdMemberWithProfile[];
+  },
+  ["household-members"],
+  { revalidate: 60 }
+);
+
+const getCachedSupplies = unstable_cache(
+  async (householdId: string, petId: string) => {
+    const supabase = await getSupabaseServerClient();
+    const { data } = await supabase
+      .from("supplies")
+      .select("*")
+      .eq("household_id", householdId)
+      .eq("pet_id", petId)
+      .order("estimated_runout_date", { ascending: true });
+
+    return (data ?? []) as Supply[];
+  },
+  ["supplies-by-pet"],
+  { revalidate: 30 }
+);
+
+const getCachedAlertSupplies = unstable_cache(
+  async (householdId: string) => {
+    const supabase = await getSupabaseServerClient();
+    const { data } = await supabase
+      .from("supplies")
+      .select("*")
+      .eq("household_id", householdId)
+      .in("status", ["pronto_se_acaba", "urgente"])
+      .order("estimated_runout_date", { ascending: true })
+      .limit(5);
+
+    return (data ?? []) as Supply[];
+  },
+  ["supplies-alerts"],
+  { revalidate: 30 }
+);
+
+const getCachedUpcomingVaccines = unstable_cache(
+  async (householdId: string) => {
+    const supabase = await getSupabaseServerClient();
+    const { data } = await supabase
+      .from("vaccines")
+      .select("*")
+      .eq("household_id", householdId)
+      .gte("next_due_date", format(new Date(), "yyyy-MM-dd"))
+      .order("next_due_date", { ascending: true })
+      .limit(5);
+
+    return (data ?? []) as Vaccine[];
+  },
+  ["upcoming-vaccines"],
+  { revalidate: 300 }
+);
+
+const getCachedVetVaccines = unstable_cache(
+  async (householdId: string, petId: string) => {
+    const supabase = await getSupabaseServerClient();
+    const { data } = await supabase
+      .from("vaccines")
+      .select("*")
+      .eq("household_id", householdId)
+      .eq("pet_id", petId)
+      .order("applied_at", { ascending: false });
+
+    return (data ?? []) as Vaccine[];
+  },
+  ["vet-vaccines"],
+  { revalidate: 300 }
+);
+
 export async function getPetPhotoUrl(pet: Pet | null) {
   if (!pet?.photo_url) return null;
   return getSignedAssetUrl(STORAGE_BUCKETS.petMedia, pet.photo_url);
@@ -191,14 +273,7 @@ export async function getPetPhotoUrl(pet: Pet | null) {
 export async function getHouseholdMembers(householdId: string) {
   if (isDemoMode) return demoMembers;
   if (!hasSupabaseEnv) return [];
-  const supabase = await getSupabaseServerClient();
-  const { data } = await supabase
-    .from("household_members")
-    .select("*, profiles(*)")
-    .eq("household_id", householdId)
-    .order("created_at", { ascending: true });
-
-  return (data ?? []) as HouseholdMemberWithProfile[];
+  return getCachedHouseholdMembers(householdId);
 }
 
 export async function getStoolLogs(context: AppContext) {
@@ -293,8 +368,8 @@ export async function getTodayDashboardData(context: AppContext) {
     medicationChecksRes,
     mealsRes,
     medicationsRes,
-    suppliesRes,
-    vaccinesRes,
+    supplies,
+    vaccines,
     recentStoolsRes,
     recentSymptomsRes,
     recentVetRes
@@ -317,20 +392,8 @@ export async function getTodayDashboardData(context: AppContext) {
       .order("scheduled_at", { ascending: true }),
     supabase.from("meals").select("*").eq("household_id", context.household.id),
     supabase.from("medications").select("*").eq("household_id", context.household.id),
-    supabase
-      .from("supplies")
-      .select("*")
-      .eq("household_id", context.household.id)
-      .in("status", ["pronto_se_acaba", "urgente"])
-      .order("estimated_runout_date", { ascending: true })
-      .limit(5),
-    supabase
-      .from("vaccines")
-      .select("*")
-      .eq("household_id", context.household.id)
-      .gte("next_due_date", format(new Date(), "yyyy-MM-dd"))
-      .order("next_due_date", { ascending: true })
-      .limit(5),
+    getCachedAlertSupplies(context.household.id),
+    getCachedUpcomingVaccines(context.household.id),
     supabase
       .from("stool_logs")
       .select("*")
@@ -399,7 +462,7 @@ export async function getTodayDashboardData(context: AppContext) {
   ].sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt));
 
   const alerts = [
-    ...((suppliesRes.data ?? []) as Supply[]).map((item) => ({
+    ...supplies.map((item) => ({
       id: item.id,
       tone: item.status === "urgente" ? "urgent" : "soft",
       title:
@@ -410,7 +473,7 @@ export async function getTodayDashboardData(context: AppContext) {
         ? `Estimado para ${item.estimated_runout_date}`
         : "Sin fecha estimada"
     })),
-    ...((vaccinesRes.data ?? []) as Vaccine[]).map((item) => ({
+    ...vaccines.map((item) => ({
       id: item.id,
       tone: "calm" as const,
       title: `Próxima vacuna: ${item.name}`,
@@ -482,8 +545,8 @@ export async function getTodayDashboardData(context: AppContext) {
     alerts,
     activity,
     todayLabel: formatLongDate(new Date()),
-    supplies: (suppliesRes.data ?? []) as Supply[],
-    vaccines: (vaccinesRes.data ?? []) as Vaccine[]
+    supplies,
+    vaccines
   };
 }
 
@@ -583,14 +646,7 @@ export async function getSuppliesData(context: AppContext) {
   if (isDemoMode) return demoSupplies;
   if (!hasSupabaseEnv) return [];
   if (!context.pet) return [];
-  const supabase = await getSupabaseServerClient();
-  const { data } = await supabase
-    .from("supplies")
-    .select("*")
-    .eq("household_id", context.household.id)
-    .eq("pet_id", context.pet.id)
-    .order("estimated_runout_date", { ascending: true });
-  return (data ?? []) as Supply[];
+  return getCachedSupplies(context.household.id, context.pet.id);
 }
 
 export async function getVetPageData(context: AppContext) {
@@ -598,19 +654,14 @@ export async function getVetPageData(context: AppContext) {
   if (!hasSupabaseEnv) return { visits: [], vaccines: [], documents: [] };
   if (!context.pet) return { visits: [], vaccines: [], documents: [] };
   const supabase = await getSupabaseServerClient();
-  const [visitsRes, vaccinesRes, documentsRes] = await Promise.all([
+  const [visitsRes, vaccines, documentsRes] = await Promise.all([
     supabase
       .from("vet_visits")
       .select("*")
       .eq("household_id", context.household.id)
       .eq("pet_id", context.pet.id)
       .order("visit_date", { ascending: false }),
-    supabase
-      .from("vaccines")
-      .select("*")
-      .eq("household_id", context.household.id)
-      .eq("pet_id", context.pet.id)
-      .order("applied_at", { ascending: false }),
+    getCachedVetVaccines(context.household.id, context.pet.id),
     supabase
       .from("documents")
       .select("*")
@@ -628,7 +679,7 @@ export async function getVetPageData(context: AppContext) {
 
   return {
     visits: (visitsRes.data ?? []) as VetVisit[],
-    vaccines: (vaccinesRes.data ?? []) as Vaccine[],
+    vaccines,
     documents
   };
 }
