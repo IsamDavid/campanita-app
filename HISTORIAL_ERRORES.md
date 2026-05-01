@@ -90,7 +90,7 @@ El botón de campana ahora es un enlace a `/configuracion`, donde ya existe la g
 
 ### 3. Carga duplicada de contexto en rutas protegidas
 
-Estado: pendiente
+Estado: resuelto el 2026-05-01
 
 Severidad: alta
 
@@ -117,9 +117,13 @@ Sugerencia:
 
 Centralizar el contexto por request usando `cache()` de React/Next, o hacer que el layout cargue el contexto y lo pase mediante provider. La opción con `cache()` es la menos invasiva.
 
+Resolución aplicada:
+
+`getCurrentUser()` y `getAppContext()` ahora usan `cache()` de React, por lo que el layout protegido y la página del mismo request reutilizan el resultado en vez de repetir las mismas consultas.
+
 ### 4. Falta de estados de carga globales
 
-Estado: pendiente
+Estado: resuelto el 2026-05-01
 
 Severidad: media
 
@@ -141,9 +145,13 @@ Sugerencia:
 
 Agregar `app/(app)/loading.tsx` con un skeleton común del `AppShell`, y luego agregar loaders específicos para pantallas pesadas si hace falta.
 
+Resolución aplicada:
+
+Se agregó `app/(app)/loading.tsx` con header, bottom nav y skeletons compartidos para todas las rutas protegidas.
+
 ### 5. Scripts de validación con riesgo de carrera
 
-Estado: pendiente
+Estado: resuelto el 2026-05-01
 
 Severidad: baja
 
@@ -174,9 +182,13 @@ Sugerencia:
 
 No correr `build` y `typecheck` en paralelo. Si se quiere automatizar, crear un script secuencial, por ejemplo `npm run verify`, que ejecute lint, typecheck y build en orden.
 
+Resolución aplicada:
+
+Se agregó `npm run verify`, que ejecuta `lint`, `typecheck` y `build` de forma secuencial.
+
 ### 6. `npm run lint` usa comando deprecado
 
-Estado: pendiente
+Estado: resuelto el 2026-05-01
 
 Severidad: baja
 
@@ -202,9 +214,13 @@ Sugerencia:
 
 Migrar a ESLint CLI con el codemod recomendado por Next o configurar `eslint` directamente.
 
+Resolución aplicada:
+
+Se migró a `eslint . --max-warnings=0` con `eslint.config.mjs` en formato flat config. Se retiró `.eslintrc.json`.
+
 ### 7. Duplicación de rutas protegidas
 
-Estado: pendiente
+Estado: resuelto el 2026-05-01
 
 Severidad: baja
 
@@ -225,6 +241,10 @@ Sugerencia:
 
 Extraer `protectedPrefixes` a un módulo compartido, por ejemplo `lib/routes.ts`, y reutilizarlo en middleware y auth.
 
+Resolución aplicada:
+
+Se agregó `lib/routes.ts` con `protectedPrefixes`, `isProtectedPath()` e `isAuthPath()`. `middleware.ts` y `lib/auth.ts` consumen esa fuente compartida.
+
 ## Notas de comportamiento observado
 
 - En modo real, sin sesión, las rutas protegidas redirigen a `/login`. Esto es esperado.
@@ -233,8 +253,4 @@ Extraer `protectedPrefixes` a un módulo compartido, por ejemplo `lib/routes.ts`
 
 ## Prioridad sugerida
 
-1. Corregir arquitectura de navegación para que no haya pantallas huérfanas.
-2. Eliminar carga duplicada de `requireAppContext()`.
-3. Agregar loading global para rutas protegidas.
-4. Dar comportamiento real o remover el botón de campana.
-5. Limpiar scripts de validación y rutas protegidas duplicadas.
+Todos los puntos listados arriba quedaron resueltos el 2026-05-01. El siguiente bloque de trabajo debería salir de una revisión nueva o de nuevas prioridades funcionales.
