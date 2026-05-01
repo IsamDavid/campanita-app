@@ -646,7 +646,14 @@ export async function getSuppliesData(context: AppContext) {
   if (isDemoMode) return demoSupplies;
   if (!hasSupabaseEnv) return [];
   if (!context.pet) return [];
-  return getCachedSupplies(context.household.id, context.pet.id);
+  const supplies = await getCachedSupplies(context.household.id, context.pet.id);
+
+  return Promise.all(
+    supplies.map(async (item) => ({
+      ...item,
+      photo_signed_url: await getSignedAssetUrl(STORAGE_BUCKETS.petMedia, item.photo_url)
+    }))
+  );
 }
 
 export async function getVetPageData(context: AppContext) {

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { LoaderCircle, Plus } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Camera, LoaderCircle, Minus, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { SupplyCard } from "@/components/campanita/SupplyCard";
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { isDemoMode } from "@/lib/demo";
+import { buildStoragePath, STORAGE_BUCKETS } from "@/lib/storage";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
 import { supplySchema } from "@/lib/validations";
 import type { AppContext, Supply } from "@/types/app";
@@ -30,14 +31,17 @@ export function SupplyManager({
     category: "",
     purchase_date: new Date().toISOString().slice(0, 10),
     estimated_runout_date: "",
-    quantity: "",
+    quantity: 1,
     price: "",
     store: "",
     notes: "",
     status: "suficiente" as const
   });
+  const [photo, setPhoto] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const preview = useMemo(() => (photo ? URL.createObjectURL(photo) : null), [photo]);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -62,6 +66,30 @@ export function SupplyManager({
     setError(null);
 
     const supabase = getSupabaseBrowserClient();
+    let photoPath: string | null = null;
+
+    if (photo) {
+      photoPath = buildStoragePath({
+        householdId: context.household.id,
+        petId: context.pet.id,
+        category: "supplies",
+        fileName: photo.name
+      });
+
+      const upload = await supabase.storage
+        .from(STORAGE_BUCKETS.petMedia)
+        .upload(photoPath, photo, {
+          contentType: photo.type,
+          upsert: false
+        });
+
+      if (upload.error) {
+        setSaving(false);
+        setError(upload.error.message);
+        return;
+      }
+    }
+
     const { error: insertError } = await supabase.from("supplies").insert({
       household_id: context.household.id,
       pet_id: context.pet.id,
@@ -69,9 +97,10 @@ export function SupplyManager({
       category: form.category,
       purchase_date: form.purchase_date,
       estimated_runout_date: form.estimated_runout_date || null,
-      quantity: form.quantity,
+      quantity: String(form.quantity),
       price: form.price ? Number(form.price) : null,
       store: form.store,
+      photo_url: photoPath,
       notes: form.notes,
       status: form.status,
       created_by: context.userId
@@ -89,12 +118,13 @@ export function SupplyManager({
       category: "",
       purchase_date: new Date().toISOString().slice(0, 10),
       estimated_runout_date: "",
-      quantity: "",
+      quantity: 1,
       price: "",
       store: "",
       notes: "",
       status: "suficiente"
     });
+    setPhoto(null);
     router.refresh();
   }
 
@@ -120,6 +150,36 @@ export function SupplyManager({
               <Input value={form.category} onChange={(event) => setForm((current) => ({ ...current, category: event.target.value }))} />
             </FormField>
           </div>
+          <FormField label="Foto del producto" hint="Opcional, se reutiliza al reabastecer">
+            <label className="flex min-h-32 cursor-pointer items-center gap-4 rounded-[1.5rem] border border-dashed border-outline-variant/70 bg-surface-container-low p-3">
+              <div className="h-24 w-24 shrink-0 overflow-hidden rounded-[1.25rem] bg-white">
+                {preview ? (
+                  <img
+                    src={preview}
+                    alt="Vista previa del producto"
+                    width={160}
+                    height={160}
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-primary">
+                    <Camera className="h-7 w-7" />
+                  </div>
+                )}
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold">{photo ? photo.name : "Subir foto"}</p>
+                <p className="mt-1 text-xs text-on-surface-variant">JPG, PNG o WebP. Puedes dejarlo vacío.</p>
+              </div>
+              <input
+                className="hidden"
+                type="file"
+                accept="image/*"
+                onChange={(event) => setPhoto(event.target.files?.[0] ?? null)}
+              />
+            </label>
+          </FormField>
           <div className="grid grid-cols-2 gap-3">
             <FormField label="Compra">
               <Input type="date" value={form.purchase_date} onChange={(event) => setForm((current) => ({ ...current, purchase_date: event.target.value }))} />
@@ -129,8 +189,36 @@ export function SupplyManager({
             </FormField>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <FormField label="Cantidad">
-              <Input value={form.quantity} onChange={(event) => setForm((current) => ({ ...current, quantity: event.target.value }))} />
+            <FormField label="Unidades">
+              <div className="flex h-12 items-center justify-between rounded-[1.25rem] bg-surface-container-low px-2">
+                <button
+                  type="button"
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-primary shadow-sm"
+                  onClick={() => setForm((current) => ({ ...current, quantity: Math.max(1, current.quantity - 1) }))}
+                  aria-label="Restar unidad"
+                >
+                  <Minus className="h-4 w-4" />
+                </button>
+                <input
+                  className="w-16 bg-transparent text-center text-lg font-bold outline-none"
+                  value={form.quantity}
+                  inputMode="numeric"
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      quantity: Math.max(1, Number.parseInt(event.target.value || "1", 10) || 1)
+                    }))
+                  }
+                />
+                <button
+                  type="button"
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-primary shadow-sm"
+                  onClick={() => setForm((current) => ({ ...current, quantity: current.quantity + 1 }))}
+                  aria-label="Sumar unidad"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
             </FormField>
             <FormField label="Precio">
               <Input value={form.price} onChange={(event) => setForm((current) => ({ ...current, price: event.target.value }))} inputMode="decimal" />
@@ -160,7 +248,7 @@ export function SupplyManager({
         {supplies.length ? (
           <div className="space-y-3">
             {supplies.map((item) => (
-              <SupplyCard key={item.id} supply={item} />
+              <SupplyCard key={item.id} supply={item} disabled={saving} />
             ))}
           </div>
         ) : (
