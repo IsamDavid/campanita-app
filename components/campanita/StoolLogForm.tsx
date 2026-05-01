@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toLocalDatetimeValue } from "@/lib/dates";
 import { isDemoMode } from "@/lib/demo";
-import { buildStoragePath, STORAGE_BUCKETS } from "@/lib/storage";
+import { buildStoragePath, createImageThumbnail, STORAGE_BUCKETS } from "@/lib/storage";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
 import { stoolLogSchema } from "@/lib/validations";
 import type { AppContext } from "@/types/app";
@@ -71,6 +71,7 @@ export function StoolLogForm({ context }: { context: AppContext }) {
     setError(null);
     const supabase = getSupabaseBrowserClient();
     let photoPath: string | null = null;
+    let thumbnailPath: string | null = null;
 
     if (file) {
       photoPath = buildStoragePath({
@@ -89,6 +90,29 @@ export function StoolLogForm({ context }: { context: AppContext }) {
         setError(upload.error.message);
         return;
       }
+
+      try {
+        const thumbnail = await createImageThumbnail(file);
+        thumbnailPath = buildStoragePath({
+          householdId: context.household.id,
+          petId: context.pet.id,
+          category: "stool/thumbnails",
+          fileName: thumbnail.name
+        });
+
+        const thumbnailUpload = await supabase.storage
+          .from(STORAGE_BUCKETS.stoolPhotos)
+          .upload(thumbnailPath, thumbnail, {
+            contentType: thumbnail.type,
+            upsert: false
+          });
+
+        if (thumbnailUpload.error) {
+          thumbnailPath = null;
+        }
+      } catch {
+        thumbnailPath = null;
+      }
     }
 
     const { data, error: insertError } = await supabase
@@ -97,6 +121,7 @@ export function StoolLogForm({ context }: { context: AppContext }) {
         household_id: context.household.id,
         pet_id: context.pet.id,
         photo_url: photoPath,
+        thumbnail_url: thumbnailPath,
         consistency,
         color,
         has_blood: hasBlood,

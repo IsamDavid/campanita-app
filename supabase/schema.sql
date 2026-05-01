@@ -134,6 +134,7 @@ create table if not exists public.stool_logs (
   household_id uuid not null references public.households (id) on delete cascade,
   pet_id uuid not null references public.pets (id) on delete cascade,
   photo_url text,
+  thumbnail_url text,
   consistency text not null check (consistency in ('liquida', 'blanda', 'normal', 'dura')),
   color text,
   has_blood boolean not null default false,
