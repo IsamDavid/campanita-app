@@ -4,9 +4,10 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { useState } from "react";
-import { LoaderCircle, PawPrint } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import { CampanitaIcon } from "@/components/campanita/CampanitaIcon";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FormField } from "@/components/ui/form-field";
@@ -86,9 +87,7 @@ export default function SignupPage() {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[1.75rem] bg-primary-container/25 text-primary shadow-soft">
-          <PawPrint className="h-8 w-8" />
-        </div>
+        <CampanitaIcon className="mx-auto mb-4 h-20 w-20 rounded-[1.75rem]" priority />
         <h1 className="text-3xl font-extrabold">Crear cuenta</h1>
         <p className="mt-2 text-sm text-on-surface-variant">
           Configura el hogar y la ficha inicial de Campanita.

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Bell, Menu } from "lucide-react";
 
+import { CampanitaIcon } from "@/components/campanita/CampanitaIcon";
+
 export function Header({
   title,
   subtitle
@@ -11,12 +13,15 @@ export function Header({
   return (
     <header className="sticky top-0 z-40 border-b border-white/60 bg-background/90 px-6 py-4 backdrop-blur-xl">
       <div className="mx-auto flex max-w-md items-center justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-on-surface-variant">
-            Campanita
-          </p>
-          <h1 className="text-xl font-extrabold">{title}</h1>
-          {subtitle ? <p className="text-sm text-on-surface-variant">{subtitle}</p> : null}
+        <div className="flex min-w-0 items-center gap-3">
+          <CampanitaIcon className="h-10 w-10 rounded-2xl shadow-sm" />
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-on-surface-variant">
+              Campanita
+            </p>
+            <h1 className="truncate text-xl font-extrabold">{title}</h1>
+            {subtitle ? <p className="truncate text-sm text-on-surface-variant">{subtitle}</p> : null}
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Link

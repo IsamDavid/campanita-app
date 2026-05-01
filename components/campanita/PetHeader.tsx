@@ -1,5 +1,6 @@
-import { PawPrint, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
+import { CampanitaIcon } from "@/components/campanita/CampanitaIcon";
 import { Card } from "@/components/ui/card";
 import type { Household, Pet, Profile } from "@/types/app";
 
@@ -15,9 +16,7 @@ export function PetHeader({
   return (
     <Card className="overflow-hidden bg-[linear-gradient(135deg,rgba(143,185,150,0.25),rgba(183,180,254,0.12),rgba(255,255,255,0.9))]">
       <div className="flex items-center gap-4">
-        <div className="flex h-16 w-16 items-center justify-center rounded-[1.4rem] bg-white/80 shadow-sm">
-          <PawPrint className="h-7 w-7 text-primary" />
-        </div>
+        <CampanitaIcon className="h-16 w-16 rounded-[1.4rem]" priority />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <h2 className="truncate text-2xl font-extrabold">{pet?.name ?? "Campanita"}</h2>
