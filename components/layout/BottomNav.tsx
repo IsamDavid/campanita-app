@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  Boxes,
   CalendarDays,
   HeartPulse,
   House,
-  Pill,
-  Users
+  Pill
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -17,7 +17,7 @@ const navItems = [
   { href: "/salud", label: "Salud", icon: HeartPulse },
   { href: "/comidas", label: "Comidas", icon: House },
   { href: "/medicinas", label: "Medicinas", icon: Pill },
-  { href: "/familia", label: "Familia", icon: Users }
+  { href: "/insumos", label: "Insumos", icon: Boxes }
 ] as const;
 
 export function BottomNav() {
