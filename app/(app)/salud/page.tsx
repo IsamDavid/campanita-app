@@ -27,25 +27,33 @@ export default async function HealthPage() {
         </div>
 
         {stools.length ? (
-          stools.map((item) => (
-            <Link key={item.id} href={`/salud/heces/${item.id}`}>
-              <Card className="flex items-center gap-4">
-                <div className="h-20 w-20 overflow-hidden rounded-[1.25rem] bg-surface-container-low">
-                  {item.photo_signed_url ? (
-                    <img src={item.photo_signed_url} alt="Foto del registro" className="h-full w-full object-cover" />
-                  ) : null}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="font-semibold">{item.consistency}</p>
-                  <p className="text-sm text-on-surface-variant">{formatDateTime(item.occurred_at)}</p>
-                  <p className="mt-1 text-sm text-on-surface-variant">
-                    {item.notes || `Color ${item.color}`}
-                  </p>
-                </div>
-                <ChevronRight className="h-5 w-5 text-on-surface-variant" />
-              </Card>
-            </Link>
-          ))
+          stools.map((item) => {
+            const imageSrc = item.thumbnail_signed_url ?? item.photo_signed_url ?? undefined;
+
+            return (
+              <Link key={item.id} href={`/salud/heces/${item.id}`}>
+                <Card className="flex items-center gap-4">
+                  <div className="h-20 w-20 overflow-hidden rounded-[1.25rem] bg-surface-container-low">
+                    {imageSrc ? (
+                      <img
+                        src={imageSrc}
+                        alt="Foto del registro"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : null}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold">{item.consistency}</p>
+                    <p className="text-sm text-on-surface-variant">{formatDateTime(item.occurred_at)}</p>
+                    <p className="mt-1 text-sm text-on-surface-variant">
+                      {item.notes || `Color ${item.color}`}
+                    </p>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-on-surface-variant" />
+                </Card>
+              </Link>
+            );
+          })
         ) : (
           <EmptyState
             title="Todavía no hay registros"

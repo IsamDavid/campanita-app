@@ -75,15 +75,23 @@ export default async function SummaryPage({
           <h2 className="text-lg font-bold">Fotos recientes de heces</h2>
           {summary.stools.length ? (
             <div className="grid grid-cols-3 gap-3">
-              {summary.stools.slice(0, 6).map((item) => (
-                <div key={item.id} className="overflow-hidden rounded-[1.2rem] bg-surface-container-low">
-                  {item.photo_signed_url ? (
-                    <img src={item.photo_signed_url} alt="Registro clínico" className="aspect-square w-full object-cover" />
-                  ) : (
-                    <div className="aspect-square" />
-                  )}
-                </div>
-              ))}
+              {summary.stools.slice(0, 6).map((item) => {
+                const imageSrc = item.thumbnail_signed_url ?? item.photo_signed_url ?? undefined;
+
+                return (
+                  <div key={item.id} className="overflow-hidden rounded-[1.2rem] bg-surface-container-low">
+                    {imageSrc ? (
+                      <img
+                        src={imageSrc}
+                        alt="Registro clínico"
+                        className="aspect-square w-full object-cover"
+                      />
+                    ) : (
+                      <div className="aspect-square" />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <p className="text-sm text-on-surface-variant">Sin fotos en el periodo seleccionado.</p>

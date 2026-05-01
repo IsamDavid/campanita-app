@@ -343,6 +343,7 @@ export const demoStoolLogs = [
     created_at: subDays(now, 1).toISOString(),
     updated_at: subDays(now, 1).toISOString(),
     photo_signed_url: "https://placehold.co/600x600/e7d2b6/6b4e3d?text=Registro+1",
+    thumbnail_signed_url: "https://placehold.co/400x400/e7d2b6/6b4e3d?text=Registro+1",
     created_by_name: "Mar"
   },
   {
@@ -361,6 +362,7 @@ export const demoStoolLogs = [
     created_at: subDays(now, 2).toISOString(),
     updated_at: subDays(now, 2).toISOString(),
     photo_signed_url: "https://placehold.co/600x600/d8c3a5/5c4033?text=Registro+2",
+    thumbnail_signed_url: "https://placehold.co/400x400/d8c3a5/5c4033?text=Registro+2",
     created_by_name: "Isa"
   }
 ];

@@ -221,6 +221,10 @@ export async function getStoolLogs(context: AppContext) {
     ((data ?? []) as StoolLog[]).map(async (item) => ({
       ...item,
       photo_signed_url: await getSignedAssetUrl(STORAGE_BUCKETS.stoolPhotos, item.photo_url),
+      thumbnail_signed_url: await getSignedAssetUrl(
+        STORAGE_BUCKETS.stoolPhotos,
+        item.thumbnail_url ?? item.photo_url
+      ),
       created_by_name: item.created_by ? profileMap.get(item.created_by) ?? "Familia" : "Familia"
     }))
   );
@@ -649,7 +653,7 @@ export async function getSummaryData(context: AppContext, fromDaysAgo = 14) {
   if (!hasSupabaseEnv) {
     return {
       symptoms: [] as any[],
-      stools: [] as Array<StoolLog & { photo_signed_url?: string | null }>,
+      stools: [] as Array<StoolLog & { photo_signed_url?: string | null; thumbnail_signed_url?: string | null }>,
       meals: [] as Meal[],
       mealChecks: [] as any[],
       medications: [] as Medication[],
@@ -661,7 +665,7 @@ export async function getSummaryData(context: AppContext, fromDaysAgo = 14) {
   if (!context.pet) {
     return {
       symptoms: [] as any[],
-      stools: [] as Array<StoolLog & { photo_signed_url?: string | null }>,
+      stools: [] as Array<StoolLog & { photo_signed_url?: string | null; thumbnail_signed_url?: string | null }>,
       meals: [] as Meal[],
       mealChecks: [] as any[],
       medications: [] as Medication[],
@@ -729,7 +733,11 @@ export async function getSummaryData(context: AppContext, fromDaysAgo = 14) {
   const stools = await Promise.all(
     ((stoolsRes.data ?? []) as StoolLog[]).map(async (item) => ({
       ...item,
-      photo_signed_url: await getSignedAssetUrl(STORAGE_BUCKETS.stoolPhotos, item.photo_url)
+      photo_signed_url: await getSignedAssetUrl(STORAGE_BUCKETS.stoolPhotos, item.photo_url),
+      thumbnail_signed_url: await getSignedAssetUrl(
+        STORAGE_BUCKETS.stoolPhotos,
+        item.thumbnail_url ?? item.photo_url
+      )
     }))
   );
 
