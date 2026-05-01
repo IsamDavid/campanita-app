@@ -22,6 +22,7 @@ export function CampanitaIcon({
         width={192}
         height={192}
         loading={priority ? "eager" : "lazy"}
+        decoding="async"
         className={cn("h-full w-full object-cover", imageClassName)}
       />
     </span>

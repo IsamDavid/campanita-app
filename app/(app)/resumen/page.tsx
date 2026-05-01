@@ -84,6 +84,10 @@ export default async function SummaryPage({
                       <img
                         src={imageSrc}
                         alt="Registro clínico"
+                        width={160}
+                        height={160}
+                        loading="lazy"
+                        decoding="async"
                         className="aspect-square w-full object-cover"
                       />
                     ) : (

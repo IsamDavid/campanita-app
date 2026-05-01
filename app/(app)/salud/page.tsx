@@ -38,6 +38,10 @@ export default async function HealthPage() {
                       <img
                         src={imageSrc}
                         alt="Foto del registro"
+                        width={160}
+                        height={160}
+                        loading="lazy"
+                        decoding="async"
                         className="h-full w-full object-cover"
                       />
                     ) : null}

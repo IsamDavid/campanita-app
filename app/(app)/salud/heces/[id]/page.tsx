@@ -22,7 +22,15 @@ export default async function StoolLogDetailPage({
       <div className="space-y-4">
         {record.photo_signed_url ? (
           <Card className="overflow-hidden p-0">
-            <img src={record.photo_signed_url} alt="Registro de heces" className="aspect-square w-full object-cover" />
+            <img
+              src={record.photo_signed_url}
+              alt="Registro de heces"
+              width={720}
+              height={720}
+              decoding="async"
+              fetchPriority="high"
+              className="aspect-square w-full object-cover"
+            />
           </Card>
         ) : null}
 

@@ -151,7 +151,14 @@ export function StoolLogForm({ context }: { context: AppContext }) {
         <FormField label="Foto" hint="Tomar o subir">
           <label className="flex aspect-square cursor-pointer flex-col items-center justify-center rounded-[1.5rem] border-2 border-dashed border-outline-variant/70 bg-surface-container-low text-center">
             {preview ? (
-              <img src={preview} alt="Vista previa de la foto" className="h-full w-full rounded-[1.4rem] object-cover" />
+              <img
+                src={preview}
+                alt="Vista previa de la foto"
+                width={480}
+                height={480}
+                decoding="async"
+                className="h-full w-full rounded-[1.4rem] object-cover"
+              />
             ) : (
               <>
                 <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-primary-container/25 text-primary">
