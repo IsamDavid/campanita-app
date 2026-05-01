@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#f9faf5",
+                    "on-primary": "#ffffff",
+                    "secondary": "#59579a",
+                    "background": "#f9faf5",
+                    "surface-container-low": "#f3f4ef",
+                    "on-secondary-fixed-variant": "#413f80",
+                    "on-primary-fixed": "#00210c",
+                    "tertiary": "#944748",
+                    "on-secondary-fixed": "#150f53",
+                    "on-surface-variant": "#424942",
+                    "on-primary-fixed-variant": "#284f33",
+                    "inverse-on-surface": "#f1f1ec",
+                    "tertiary-container": "#f49595",
+                    "on-surface": "#1a1c1a",
+                    "secondary-container": "#b7b4fe",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed": "#e3dfff",
+                    "on-primary-container": "#244a2f",
+                    "surface-variant": "#e2e3de",
+                    "tertiary-fixed": "#ffdad9",
+                    "surface-tint": "#406749",
+                    "on-tertiary-fixed-variant": "#763032",
+                    "outline": "#727971",
+                    "surface-container": "#eeeeea",
+                    "surface-dim": "#dadad6",
+                    "on-tertiary-container": "#712c2e",
+                    "error": "#ba1a1a",
+                    "inverse-surface": "#2f312e",
+                    "on-secondary-container": "#464385",
+                    "outline-variant": "#c1c8bf",
+                    "error-container": "#ffdad6",
+                    "primary-container": "#8fb996",
+                    "on-error-container": "#93000a",
+                    "surface-container-high": "#e8e8e4",
+                    "primary": "#406749",
+                    "primary-fixed": "#c1edc8",
+                    "surface-bright": "#f9faf5",
+                    "surface-container-highest": "#e2e3de",
+                    "on-background": "#1a1c1a",
+                    "primary-fixed-dim": "#a6d1ad",
+                    "on-tertiary-fixed": "#3d050b",
+                    "on-error": "#ffffff",
+                    "secondary-fixed-dim": "#c3c0ff",
+                    "tertiary-fixed-dim": "#ffb3b2",
+                    "inverse-primary": "#a6d1ad"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "stack-md": "20px",
+                    "margin-page": "24px",
+                    "stack-sm": "12px",
+                    "gutter": "16px",
+                    "stack-lg": "32px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "label-md": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "headline-xl": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "26px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-xl": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f9faf5;
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-surface">
+<!-- TopAppBar -->
+<header class="bg-stone-50/90 dark:bg-stone-950/90 backdrop-blur-md sticky top-0 w-full z-40 shadow-[0_4px_20px_rgba(0,0,0,0.06)] border-none">
+<div class="flex justify-between items-center px-6 py-3 w-full">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden border-2 border-primary-container">
+<img alt="Pet profile photo" class="w-full h-full object-cover" data-alt="Close-up portrait of a cute golden retriever puppy with soft lighting and a blurred park background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZD_HeXpa1tTwdMytXKaK7Q__UOkp3JH8N4hm6NDpg4g89jhijdOOsvrKUod_O75yoa0pPws0fjF-xv4v8BP6h8W4Ddu3-l_UU52037qZatkgQETrYpLbzOrt5uJi9r41RAerzfQmacQUwNe-G1PxexklpazCeh2n2gQUfasUMoWbf2QIQXQoNyAUK376RJ4i-8p0_fvogZSfVS3W6H-Hno9oi3FXmEaZ8V4q2m8OvK1ukoA9Z2bUtjfbOHAbYB8L4HIbjIJWCmUA"/>
+</div>
+<span class="font-['Plus_Jakarta_Sans'] font-extrabold text-xl text-stone-900 tracking-tight">Campanita</span>
+</div>
+<button class="text-[#8FB996] hover:opacity-80 transition-opacity active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</div>
+</header>
+<main class="px-margin-page pt-stack-md pb-32">
+<!-- Main Headline -->
+<div class="mb-stack-lg">
+<h1 class="font-headline-xl text-on-surface">Plan de Comidas</h1>
+<p class="font-body-md text-on-surface-variant">Nutrición balanceada para hoy</p>
+</div>
+<!-- Horarios de hoy Section -->
+<section class="mb-stack-lg">
+<div class="flex justify-between items-center mb-stack-sm">
+<h2 class="font-headline-md text-on-surface">Horarios de hoy</h2>
+<span class="font-label-md text-primary bg-primary-fixed px-3 py-1 rounded-full">3 Comidas</span>
+</div>
+<div class="space-y-gutter">
+<!-- Breakfast Card - Done -->
+<div class="bg-surface-container-lowest p-gutter rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-surface-container-low">
+<div class="flex justify-between items-start mb-stack-sm">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-2xl bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="restaurant">restaurant</span>
+</div>
+<div>
+<h3 class="font-headline-md">Desayuno</h3>
+<p class="font-label-sm text-on-surface-variant">8:00 am • 150g</p>
+</div>
+</div>
+<span class="font-label-sm bg-primary-container text-on-primary-container px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                            Dada por Ana
+                        </span>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="info">info</span>
+<p class="font-body-md text-on-surface-variant">Mezclar con caldo</p>
+</div>
+</div>
+<!-- Lunch Card - Pending -->
+<div class="bg-surface-container-lowest p-gutter rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.06)] border-l-4 border-l-secondary-container">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-2xl bg-secondary-fixed flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="sunny">sunny</span>
+</div>
+<div>
+<h3 class="font-headline-md">Almuerzo</h3>
+<p class="font-label-sm text-on-surface-variant">2:00 pm • 100g</p>
+</div>
+</div>
+<button class="bg-secondary text-on-secondary px-4 py-2 rounded-full font-label-md active:scale-95 transition-transform shadow-md">
+                            Confirmar
+                        </button>
+</div>
+<div class="mt-4 flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="schedule">schedule</span>
+<span class="font-label-sm">Pendiente</span>
+</div>
+</div>
+<!-- Dinner Card - Pending -->
+<div class="bg-surface-container-lowest p-gutter rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-surface-container-low opacity-80">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-2xl bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+</div>
+<div>
+<h3 class="font-headline-md">Cena</h3>
+<p class="font-label-sm text-on-surface-variant">8:00 pm • 150g</p>
+</div>
+</div>
+<span class="font-label-sm text-on-surface-variant bg-surface-container-high px-3 py-1 rounded-full">Pendiente</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Historial Reciente Section -->
+<section>
+<h2 class="font-headline-md text-on-surface mb-stack-sm">Historial reciente</h2>
+<div class="bg-surface-container-lowest rounded-lg overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.06)]">
+<div class="divide-y divide-surface-container">
+<div class="p-gutter flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-container" data-icon="history">history</span>
+<div>
+<p class="font-label-md">Cena - Ayer</p>
+<p class="font-label-sm text-on-surface-variant">8:05 pm • 150g por Carlos</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant" data-icon="chevron_right">chevron_right</span>
+</div>
+<div class="p-gutter flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-container" data-icon="history">history</span>
+<div>
+<p class="font-label-md">Almuerzo - Ayer</p>
+<p class="font-label-sm text-on-surface-variant">2:15 pm • 100g por Ana</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-28 right-6 w-14 h-14 bg-primary text-on-primary rounded-2xl shadow-xl flex items-center justify-center z-40 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full bg-white/95 dark:bg-stone-900/95 backdrop-blur-lg z-50 rounded-t-[32px] shadow-[0_-4px_20px_rgba(0,0,0,0.06)] border-t border-stone-100 dark:border-stone-800">
+<div class="flex justify-around items-center px-4 pt-3 pb-6 w-full">
+<div class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 hover:text-[#8FB996] transition-colors active:scale-90 transition-transform duration-200">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium mt-1">Hoy</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 hover:text-[#8FB996] transition-colors active:scale-90 transition-transform duration-200">
+<span class="material-symbols-outlined" data-icon="health_and_safety">health_and_safety</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium mt-1">Salud</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#8FB996] bg-[#8FB996]/10 rounded-2xl px-3 py-1 active:scale-90 transition-transform duration-200">
+<span class="material-symbols-outlined" data-icon="restaurant" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium mt-1">Comidas</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 hover:text-[#8FB996] transition-colors active:scale-90 transition-transform duration-200">
+<span class="material-symbols-outlined" data-icon="medication">medication</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium mt-1">Medicinas</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 hover:text-[#8FB996] transition-colors active:scale-90 transition-transform duration-200">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium mt-1">Más</span>
+</div>
+</div>
+</nav>
+</body></html>

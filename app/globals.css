@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  background: #f9faf5;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top right, rgba(183, 180, 254, 0.18), transparent 28%),
+    radial-gradient(circle at top left, rgba(143, 185, 150, 0.18), transparent 24%),
+    #f9faf5;
+  color: #1a1c1a;
+  font-family:
+    "Plus Jakarta Sans",
+    "Avenir Next",
+    "Segoe UI",
+    sans-serif;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: rgba(143, 185, 150, 0.35);
+}
+
+@layer base {
+  body {
+    @apply font-sans antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply tracking-tight text-on-surface;
+  }
+}
+
+@layer components {
+  .card-surface {
+    @apply rounded-card bg-surface-container-lowest shadow-soft;
+  }
+
+  .card-muted {
+    @apply rounded-card bg-surface-container-low shadow-soft;
+  }
+
+  .input-surface {
+    @apply w-full rounded-[1.25rem] border border-transparent bg-surface-container-low px-4 py-3 text-sm text-on-surface outline-none transition focus:border-primary-container focus:ring-2 focus:ring-primary-container/35;
+  }
+
+  .pill-chip {
+    @apply inline-flex items-center gap-2 rounded-pill px-3 py-1.5 text-xs font-semibold;
+  }
+}

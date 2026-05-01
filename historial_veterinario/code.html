@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Historial Veterinario - Campanita</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#f9faf5",
+                    "on-primary": "#ffffff",
+                    "secondary": "#59579a",
+                    "background": "#f9faf5",
+                    "surface-container-low": "#f3f4ef",
+                    "on-secondary-fixed-variant": "#413f80",
+                    "on-primary-fixed": "#00210c",
+                    "tertiary": "#944748",
+                    "on-secondary-fixed": "#150f53",
+                    "on-surface-variant": "#424942",
+                    "on-primary-fixed-variant": "#284f33",
+                    "inverse-on-surface": "#f1f1ec",
+                    "tertiary-container": "#f49595",
+                    "on-surface": "#1a1c1a",
+                    "secondary-container": "#b7b4fe",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed": "#e3dfff",
+                    "on-primary-container": "#244a2f",
+                    "surface-variant": "#e2e3de",
+                    "tertiary-fixed": "#ffdad9",
+                    "surface-tint": "#406749",
+                    "on-tertiary-fixed-variant": "#763032",
+                    "outline": "#727971",
+                    "surface-container": "#eeeeea",
+                    "surface-dim": "#dadad6",
+                    "on-tertiary-container": "#712c2e",
+                    "error": "#ba1a1a",
+                    "inverse-surface": "#2f312e",
+                    "on-secondary-container": "#464385",
+                    "outline-variant": "#c1c8bf",
+                    "error-container": "#ffdad6",
+                    "primary-container": "#8fb996",
+                    "on-error-container": "#93000a",
+                    "surface-container-high": "#e8e8e4",
+                    "primary": "#406749",
+                    "primary-fixed": "#c1edc8",
+                    "surface-bright": "#f9faf5",
+                    "surface-container-highest": "#e2e3de",
+                    "on-background": "#1a1c1a",
+                    "primary-fixed-dim": "#a6d1ad",
+                    "on-tertiary-fixed": "#3d050b",
+                    "on-error": "#ffffff",
+                    "secondary-fixed-dim": "#c3c0ff",
+                    "tertiary-fixed-dim": "#ffb3b2",
+                    "inverse-primary": "#a6d1ad"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "stack-md": "20px",
+                    "margin-page": "24px",
+                    "stack-sm": "12px",
+                    "gutter": "16px",
+                    "stack-lg": "32px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "label-md": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "headline-xl": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "26px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-xl": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="sticky top-0 w-full z-40 bg-stone-50/90 dark:bg-stone-950/90 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex justify-between items-center px-6 py-3 w-full">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-stone-200">
+<img alt="Pet profile photo" class="w-full h-full object-cover" data-alt="Close-up portrait of a small happy golden dog with a cute expression in soft morning sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCz3z48dC4Y1yQ3m61h1bN3_myeyMBmz1QuM7DjCrmCEfqKOd2PWgsg3NL_ZvDMtyXO_jbunwrHuTdJ7TobEOdlqsqcaAoJD2TVOJcJaW9o_QPn8CgCAr94OFxFi_7htNX02nwqngBbtYWZ92Xm3LmXlzJrlBf3HFWNX2ceKFo5G4K1cB6C4htBxDXcIMxV-1pZOQmvguPm5K4zxJYSFUuhhlZ-a4o5yX3FYihvHmy3tlrsB2ygZhaSihKlCU9AzkOdCbM5ickHYMM"/>
+</div>
+<span class="text-xl font-extrabold text-stone-900 dark:text-stone-50 font-['Plus_Jakarta_Sans'] tracking-tight">Campanita</span>
+</div>
+<button class="text-[#8FB996] hover:opacity-80 transition-opacity active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</header>
+<main class="px-margin-page mt-stack-lg">
+<!-- Main Title -->
+<div class="mb-stack-lg">
+<h1 class="font-headline-xl text-headline-xl text-on-surface mb-2">Expediente de Campanita</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Historial clínico y de salud completo</p>
+</div>
+<!-- Health Stats Overview -->
+<div class="grid grid-cols-2 gap-gutter mb-stack-lg">
+<div class="bg-surface-container-lowest p-stack-md rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.06)]">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Peso Actual</span>
+<p class="font-headline-lg text-headline-lg text-primary">4.5 kg</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="trending_down">trending_down</span>
+<span class="font-label-sm text-label-sm text-primary">-0.2kg vs mes ant.</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-stack-md rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.06)]">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Próx. Cita</span>
+<p class="font-headline-lg text-headline-lg text-secondary">15 May</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[14px] text-secondary" data-icon="event">event</span>
+<span class="font-label-sm text-label-sm text-secondary">Desparasitación</span>
+</div>
+</div>
+</div>
+<!-- Timeline Container -->
+<div class="relative">
+<!-- Timeline Vertical Line -->
+<div class="absolute left-6 top-4 bottom-4 w-[2px] bg-outline-variant"></div>
+<!-- Event 1: Consulta General -->
+<div class="relative flex gap-gutter mb-stack-lg pl-14">
+<div class="absolute left-0 w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center z-10 shadow-sm border-4 border-surface">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="stethoscope">stethoscope</span>
+</div>
+<div class="bg-surface-container-lowest p-stack-md rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex-1">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-md text-headline-md">Consulta General</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-low px-2 py-1 rounded-full">20 Abr</span>
+</div>
+<div class="space-y-stack-sm">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="hospital">local_hospital</span>
+<span class="font-body-md text-body-md">Veterinaria Mascotas</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="monitor_weight">monitor_weight</span>
+<span class="font-body-md text-body-md">Peso: 4.5kg</span>
+</div>
+<div class="bg-primary/5 border-l-4 border-primary p-3 rounded-r-lg mt-2">
+<p class="font-body-md text-body-md italic text-on-primary-container">"Se recetó antibiótico por infección"</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Event 2: Vacuna Sextuple -->
+<div class="relative flex gap-gutter mb-stack-lg pl-14">
+<div class="absolute left-0 w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center z-10 shadow-sm border-4 border-surface">
+<span class="material-symbols-outlined text-on-secondary-container" data-icon="syringe">syringe</span>
+</div>
+<div class="bg-surface-container-lowest p-stack-md rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex-1">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-md text-headline-md">Vacuna Sextuple</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-low px-2 py-1 rounded-full">12 Mar</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] text-primary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body-md text-body-md">Refuerzo anual completado</span>
+</div>
+</div>
+</div>
+<!-- Event 3: Estudio de Sangre -->
+<div class="relative flex gap-gutter mb-stack-lg pl-14">
+<div class="absolute left-0 w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center z-10 shadow-sm border-4 border-surface">
+<span class="material-symbols-outlined text-on-tertiary-container" data-icon="biotech">biotech</span>
+</div>
+<div class="bg-surface-container-lowest p-stack-md rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex-1">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline-md text-headline-md">Estudio de Sangre</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-low px-2 py-1 rounded-full">10 Mar</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-20 h-24 rounded-lg overflow-hidden relative group cursor-pointer">
+<img alt="Lab results thumbnail" class="w-full h-full object-cover" data-alt="Close-up of a clinical laboratory report on a clipboard with a stethoscope in soft-focus professional setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrJ82FcdQP_SdZe7jasAoI8MCox6ypmg_UzmupTieM1HBK425YTDHs84an4bt5Y8rYTPFzDXPCZVmfgfnS8dkg6yRoCMTlrlaEZ5Dl63WDs9IeHF2OqEQKW1SOGnbR8zRY0aDHzMUOWZ9_i9QLYRSEeHMdMxK__UWjDarj6tlhMSm_JlPpQr8RXxg3eItY-n7IHuNwyKg0Nxl0XPN2yKpIvFwlAUsPz7lO2a1P4_ReOAYWFFuAf3rp2FhbDiQ0LTusYn8_uLEPK0w"/>
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white" data-icon="visibility">visibility</span>
+</div>
+</div>
+<div class="flex-1">
+<p class="font-label-md text-label-md text-on-surface mb-1">Resultados Generales</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Archivo: Hematologia_Campa.pdf</p>
+<button class="mt-2 flex items-center gap-1 text-primary font-label-md">
+<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
+<span>Descargar</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Add New Record Action -->
+<button class="w-full bg-primary py-4 rounded-lg text-on-primary font-headline-md shadow-lg flex items-center justify-center gap-2 mt-stack-lg active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span>Nuevo Registro</span>
+</button>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pt-3 pb-6 bg-white/95 dark:bg-stone-900/95 backdrop-blur-lg shadow-[0_-4px_20px_rgba(0,0,0,0.06)] rounded-t-[32px] z-50 border-t border-stone-100 dark:border-stone-800">
+<a class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 font-['Plus_Jakarta_Sans'] text-[10px] font-medium hover:text-[#8FB996] transition-colors active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="calendar_today">calendar_today</span>
+<span>Hoy</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#8FB996] bg-[#8FB996]/10 rounded-2xl px-3 py-1 font-['Plus_Jakarta_Sans'] text-[10px] font-medium active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="health_and_safety" style="font-variation-settings: 'FILL' 1;">health_and_safety</span>
+<span>Salud</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 font-['Plus_Jakarta_Sans'] text-[10px] font-medium hover:text-[#8FB996] transition-colors active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="restaurant">restaurant</span>
+<span>Comidas</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 font-['Plus_Jakarta_Sans'] text-[10px] font-medium hover:text-[#8FB996] transition-colors active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="medication">medication</span>
+<span>Medicinas</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 font-['Plus_Jakarta_Sans'] text-[10px] font-medium hover:text-[#8FB996] transition-colors active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="more_horiz">more_horiz</span>
+<span>Más</span>
+</a>
+</nav>
+</body></html>

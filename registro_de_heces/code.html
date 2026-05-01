@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#f9faf5",
+                    "on-primary": "#ffffff",
+                    "secondary": "#59579a",
+                    "background": "#f9faf5",
+                    "surface-container-low": "#f3f4ef",
+                    "on-secondary-fixed-variant": "#413f80",
+                    "on-primary-fixed": "#00210c",
+                    "tertiary": "#944748",
+                    "on-secondary-fixed": "#150f53",
+                    "on-surface-variant": "#424942",
+                    "on-primary-fixed-variant": "#284f33",
+                    "inverse-on-surface": "#f1f1ec",
+                    "tertiary-container": "#f49595",
+                    "on-surface": "#1a1c1a",
+                    "secondary-container": "#b7b4fe",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed": "#e3dfff",
+                    "on-primary-container": "#244a2f",
+                    "surface-variant": "#e2e3de",
+                    "tertiary-fixed": "#ffdad9",
+                    "surface-tint": "#406749",
+                    "on-tertiary-fixed-variant": "#763032",
+                    "outline": "#727971",
+                    "surface-container": "#eeeeea",
+                    "surface-dim": "#dadad6",
+                    "on-tertiary-container": "#712c2e",
+                    "error": "#ba1a1a",
+                    "inverse-surface": "#2f312e",
+                    "on-secondary-container": "#464385",
+                    "outline-variant": "#c1c8bf",
+                    "error-container": "#ffdad6",
+                    "primary-container": "#8fb996",
+                    "on-error-container": "#93000a",
+                    "surface-container-high": "#e8e8e4",
+                    "primary": "#406749",
+                    "primary-fixed": "#c1edc8",
+                    "surface-bright": "#f9faf5",
+                    "surface-container-highest": "#e2e3de",
+                    "on-background": "#1a1c1a",
+                    "primary-fixed-dim": "#a6d1ad",
+                    "on-tertiary-fixed": "#3d050b",
+                    "on-error": "#ffffff",
+                    "secondary-fixed-dim": "#c3c0ff",
+                    "tertiary-fixed-dim": "#ffb3b2",
+                    "inverse-primary": "#a6d1ad"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "stack-md": "20px",
+                    "margin-page": "24px",
+                    "stack-sm": "12px",
+                    "gutter": "16px",
+                    "stack-lg": "32px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "label-md": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "headline-xl": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "26px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-xl": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-shadow {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body-md text-on-surface antialiased min-h-screen pb-32">
+<!-- Top AppBar (Back Action Version) -->
+<header class="bg-stone-50/90 dark:bg-stone-950/90 backdrop-blur-md sticky top-0 w-full z-40 shadow-[0_4px_20px_rgba(0,0,0,0.06)] border-none">
+<div class="flex justify-between items-center px-6 py-3 w-full">
+<div class="flex items-center gap-4">
+<button class="text-stone-900 dark:text-stone-50 hover:opacity-80 transition-opacity active:scale-95">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="text-xl font-extrabold text-stone-900 dark:text-stone-50 font-['Plus_Jakarta_Sans'] tracking-tight">Nuevo Registro</h1>
+</div>
+<div class="text-[#8FB996] font-['Plus_Jakarta_Sans'] font-semibold tracking-tight text-sm">
+                23 abr, 11:15 am
+            </div>
+</div>
+</header>
+<main class="max-w-md mx-auto px-margin-page mt-stack-lg space-y-stack-lg">
+<!-- Photo Upload Section -->
+<section class="space-y-stack-sm">
+<h2 class="font-headline-md text-on-surface px-1">Foto</h2>
+<div class="relative aspect-square w-full bg-white rounded-lg custom-shadow flex flex-col items-center justify-center border-2 border-dashed border-outline-variant overflow-hidden group">
+<div class="flex flex-col items-center gap-2 group-hover:scale-105 transition-transform">
+<div class="w-16 h-16 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-4xl">add_a_photo</span>
+</div>
+<span class="font-label-md text-on-surface-variant">Subir o tomar foto</span>
+</div>
+<!-- Decorative background pattern -->
+<div class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#406749_1px,transparent_1px)] [background-size:20px_20px]"></div>
+</div>
+</section>
+<!-- Consistency Section -->
+<section class="space-y-stack-sm">
+<h2 class="font-headline-md text-on-surface px-1">Consistencia</h2>
+<div class="grid grid-cols-4 gap-gutter">
+<button class="flex flex-col items-center gap-2 p-3 bg-white rounded-lg custom-shadow border-2 border-transparent hover:border-primary-container transition-all active:scale-95">
+<span class="material-symbols-outlined text-tertiary-container">water_drop</span>
+<span class="font-label-sm text-on-surface-variant">Líquida</span>
+</button>
+<button class="flex flex-col items-center gap-2 p-3 bg-white rounded-lg custom-shadow border-2 border-transparent hover:border-primary-container transition-all active:scale-95">
+<span class="material-symbols-outlined text-primary-container">waves</span>
+<span class="font-label-sm text-on-surface-variant">Blanda</span>
+</button>
+<button class="flex flex-col items-center gap-2 p-3 bg-white rounded-lg custom-shadow border-2 border-primary-container transition-all active:scale-95">
+<span class="material-symbols-outlined text-primary" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-sm text-primary font-bold">Normal</span>
+</button>
+<button class="flex flex-col items-center gap-2 p-3 bg-white rounded-lg custom-shadow border-2 border-transparent hover:border-primary-container transition-all active:scale-95">
+<span class="material-symbols-outlined text-on-secondary-fixed-variant">landscape</span>
+<span class="font-label-sm text-on-surface-variant">Dura</span>
+</button>
+</div>
+</section>
+<!-- Color Picker Section -->
+<section class="space-y-stack-sm">
+<h2 class="font-headline-md text-on-surface px-1">Color</h2>
+<div class="bg-white rounded-lg p-5 custom-shadow flex justify-around items-center">
+<button class="w-10 h-10 rounded-full bg-[#5C4033] ring-4 ring-offset-2 ring-transparent active:ring-primary-container transition-all"></button>
+<button class="w-12 h-12 rounded-full bg-[#8B4513] ring-4 ring-offset-2 ring-primary transition-all relative">
+<span class="material-symbols-outlined text-white absolute inset-0 flex items-center justify-center text-xl">done</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-[#CD853F] ring-4 ring-offset-2 ring-transparent active:ring-primary-container transition-all"></button>
+<button class="w-10 h-10 rounded-full bg-[#A0522D] ring-4 ring-offset-2 ring-transparent active:ring-primary-container transition-all"></button>
+<button class="w-10 h-10 rounded-full bg-[#2F4F4F] ring-4 ring-offset-2 ring-transparent active:ring-primary-container transition-all"></button>
+</div>
+</section>
+<!-- Details Chips -->
+<section class="space-y-stack-sm">
+<h2 class="font-headline-md text-on-surface px-1">Detalles</h2>
+<div class="flex flex-wrap gap-3">
+<button class="px-5 py-2 rounded-full bg-white border border-outline-variant font-label-md text-on-surface-variant hover:bg-surface-container-low transition-colors active:scale-95">Sangre</button>
+<button class="px-5 py-2 rounded-full bg-white border border-outline-variant font-label-md text-on-surface-variant hover:bg-surface-container-low transition-colors active:scale-95">Moco</button>
+<button class="px-5 py-2 rounded-full bg-tertiary-container/20 border-2 border-tertiary-container font-label-md text-on-tertiary-container flex items-center gap-2">
+                    Olor fuerte
+                    <span class="material-symbols-outlined text-sm" data-weight="fill" style="font-variation-settings: 'FILL' 1;">close</span>
+</button>
+</div>
+</section>
+<!-- Notes Field -->
+<section class="space-y-stack-sm">
+<h2 class="font-headline-md text-on-surface px-1">Notas</h2>
+<textarea class="w-full h-32 bg-surface-container-low border-none rounded-lg p-5 font-body-md focus:ring-2 focus:ring-primary-container resize-none" placeholder="Añade observaciones adicionales..."></textarea>
+</section>
+<!-- Primary Action Button -->
+<div class="pt-stack-md">
+<button class="w-full py-5 bg-primary text-on-primary font-headline-md rounded-lg shadow-lg hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-3">
+<span class="material-symbols-outlined">save</span>
+                Guardar registro
+            </button>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pt-3 pb-6 bg-white/95 dark:bg-stone-900/95 backdrop-blur-lg z-50 rounded-t-[32px] shadow-[0_-4px_20px_rgba(0,0,0,0.06)] border-t border-stone-100 dark:border-stone-800">
+<button class="flex flex-col items-center justify-center text-[#8FB996] bg-[#8FB996]/10 rounded-2xl px-3 py-1 font-['Plus_Jakarta_Sans'] text-[10px] font-medium transition-transform duration-200 active:scale-90">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+            Hoy
+        </button>
+<button class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 font-['Plus_Jakarta_Sans'] text-[10px] font-medium transition-colors hover:text-[#8FB996] active:scale-90">
+<span class="material-symbols-outlined" data-icon="health_and_safety">health_and_safety</span>
+            Salud
+        </button>
+<button class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 font-['Plus_Jakarta_Sans'] text-[10px] font-medium transition-colors hover:text-[#8FB996] active:scale-90">
+<span class="material-symbols-outlined" data-icon="restaurant">restaurant</span>
+            Comidas
+        </button>
+<button class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 font-['Plus_Jakarta_Sans'] text-[10px] font-medium transition-colors hover:text-[#8FB996] active:scale-90">
+<span class="material-symbols-outlined" data-icon="medication">medication</span>
+            Medicinas
+        </button>
+<button class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 font-['Plus_Jakarta_Sans'] text-[10px] font-medium transition-colors hover:text-[#8FB996] active:scale-90">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+            Más
+        </button>
+</nav>
+</body></html>

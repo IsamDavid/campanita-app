@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#f9faf5",
+                    "on-primary": "#ffffff",
+                    "secondary": "#59579a",
+                    "background": "#f9faf5",
+                    "surface-container-low": "#f3f4ef",
+                    "on-secondary-fixed-variant": "#413f80",
+                    "on-primary-fixed": "#00210c",
+                    "tertiary": "#944748",
+                    "on-secondary-fixed": "#150f53",
+                    "on-surface-variant": "#424942",
+                    "on-primary-fixed-variant": "#284f33",
+                    "inverse-on-surface": "#f1f1ec",
+                    "tertiary-container": "#f49595",
+                    "on-surface": "#1a1c1a",
+                    "secondary-container": "#b7b4fe",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed": "#e3dfff",
+                    "on-primary-container": "#244a2f",
+                    "surface-variant": "#e2e3de",
+                    "tertiary-fixed": "#ffdad9",
+                    "surface-tint": "#406749",
+                    "on-tertiary-fixed-variant": "#763032",
+                    "outline": "#727971",
+                    "surface-container": "#eeeeea",
+                    "surface-dim": "#dadad6",
+                    "on-tertiary-container": "#712c2e",
+                    "error": "#ba1a1a",
+                    "inverse-surface": "#2f312e",
+                    "on-secondary-container": "#464385",
+                    "outline-variant": "#c1c8bf",
+                    "error-container": "#ffdad6",
+                    "primary-container": "#8fb996",
+                    "on-error-container": "#93000a",
+                    "surface-container-high": "#e8e8e4",
+                    "primary": "#406749",
+                    "primary-fixed": "#c1edc8",
+                    "surface-bright": "#f9faf5",
+                    "surface-container-highest": "#e2e3de",
+                    "on-background": "#1a1c1a",
+                    "primary-fixed-dim": "#a6d1ad",
+                    "on-tertiary-fixed": "#3d050b",
+                    "on-error": "#ffffff",
+                    "secondary-fixed-dim": "#c3c0ff",
+                    "tertiary-fixed-dim": "#ffb3b2",
+                    "inverse-primary": "#a6d1ad"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "stack-md": "20px",
+                    "margin-page": "24px",
+                    "stack-sm": "12px",
+                    "gutter": "16px",
+                    "stack-lg": "32px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "label-md": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "headline-xl": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "26px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-xl": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f9faf5;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        .bento-item-large {
+            grid-column: span 2;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-surface">
+<!-- TopAppBar -->
+<header class="sticky top-0 w-full z-40 bg-stone-50/90 dark:bg-stone-950/90 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.06)] border-none">
+<div class="flex justify-between items-center px-6 py-3 w-full">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="close up portrait of a golden retriever puppy looking into the camera with soft natural lighting and warm tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpR42ZKaLP-NhtVT50HlZJSabGZ1iEoQ7iE-0C2SlJbuqEJb6sEJhNQkQrGJO52y-mxy6bmBcciOL1hwNr1T-k_2zwbDw8eoKbGZdClNZmu9TJx3bx2t7jV0fWitxUmXjBECkb6roZE2JB2iAFGwUFmyskB8jPefbju3c_BsyrxIm3r9kzb0GmDO0FzyjHugb_PslcPjQSzCaVsF-ltbDMISrW0rJFMGF1RKuQ-4KC8SzMDbSWFZLT333I557HGSAdooqIRwuASC4"/>
+</div>
+<h1 class="text-xl font-extrabold text-stone-900 dark:text-stone-50 font-['Plus_Jakarta_Sans'] tracking-tight">Campanita</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-stone-400 hover:opacity-80 transition-opacity cursor-pointer">notifications</span>
+</div>
+</div>
+</header>
+<main class="px-margin-page pb-32 pt-stack-md max-w-2xl mx-auto">
+<!-- Header Content -->
+<div class="mb-stack-lg">
+<div class="flex justify-between items-end">
+<div>
+<h2 class="font-headline-xl text-on-background">Resumen Médico</h2>
+<p class="font-body-md text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+                        Últimos 7 días
+                    </p>
+</div>
+<button class="bg-primary text-on-primary px-5 py-2.5 rounded-full font-label-md flex items-center gap-2 active:scale-95 transition-transform shadow-md">
+<span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+                    Compartir resumen
+                </button>
+</div>
+</div>
+<!-- Section: Resumen de salud (Bento Style) -->
+<section class="mb-stack-lg">
+<h3 class="font-headline-md text-on-background mb-4 px-1">Resumen de salud</h3>
+<div class="bento-grid">
+<div class="bento-item-large bg-surface-container-lowest p-6 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex items-center gap-4">
+<div class="w-14 h-14 rounded-2xl bg-tertiary-container/20 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[32px]">warning</span>
+</div>
+<div>
+<p class="font-label-sm text-on-surface-variant uppercase tracking-wider">Digestión</p>
+<p class="font-headline-md text-on-surface">Heces anormales: 2 registros</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.06)]">
+<div class="w-10 h-10 rounded-xl bg-primary-container/20 flex items-center justify-center text-primary mb-3">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+<p class="font-label-sm text-on-surface-variant uppercase tracking-wider">Apetito</p>
+<p class="font-headline-md text-on-surface">Estable</p>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.06)]">
+<div class="w-10 h-10 rounded-xl bg-secondary-container/20 flex items-center justify-center text-secondary mb-3">
+<span class="material-symbols-outlined">sentiment_very_satisfied</span>
+</div>
+<p class="font-label-sm text-on-surface-variant uppercase tracking-wider">Ánimo</p>
+<p class="font-headline-md text-on-surface">9/10</p>
+</div>
+</div>
+</section>
+<!-- Section: Medicinas Actuales -->
+<section class="mb-stack-lg">
+<h3 class="font-headline-md text-on-background mb-4 px-1">Medicinas Actuales</h3>
+<div class="space-y-3">
+<div class="flex items-center justify-between bg-surface-container-lowest p-4 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.06)]">
+<div class="flex items-center gap-4">
+<div class="p-3 bg-secondary-fixed text-on-secondary-fixed rounded-2xl">
+<span class="material-symbols-outlined">medication</span>
+</div>
+<div>
+<p class="font-label-md text-on-surface">Amoxicilina 250mg</p>
+<p class="font-label-sm text-on-surface-variant">Cada 12 horas • 5 días restantes</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-stone-300">chevron_right</span>
+</div>
+<div class="flex items-center justify-between bg-surface-container-lowest p-4 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.06)]">
+<div class="flex items-center gap-4">
+<div class="p-3 bg-primary-fixed text-on-primary-fixed-variant rounded-2xl">
+<span class="material-symbols-outlined">vaccines</span>
+</div>
+<div>
+<p class="font-label-md text-on-surface">Suplemento Omega-3</p>
+<p class="font-label-sm text-on-surface-variant">Diario • Permanente</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-stone-300">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- Section: Fotos recientes -->
+<section class="mb-stack-lg">
+<div class="flex justify-between items-center mb-4 px-1">
+<h3 class="font-headline-md text-on-background">Fotos recientes</h3>
+<span class="text-primary font-label-md cursor-pointer hover:underline transition-all">Ver todas</span>
+</div>
+<div class="grid grid-cols-3 gap-3">
+<div class="aspect-square rounded-lg overflow-hidden bg-surface-variant shadow-sm">
+<img class="w-full h-full object-cover" data-alt="close up of a dog's stool in grass for medical documentation, natural daylight, informative clinical perspective" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTTzcPW4eC3ZwuEAsWtY9VWsUJtG0bmyJGyC1AShhZaoFsZTe31k8gkJB-4Ra6syIioejMZ4liBY0kwoCOLMTK-COUE35znHLmhSQnRzR9PC9KePcaxX7712ndjYMXmu-tFG66DnECAFlJhlAXtKE70ZeIcJCte3bhlIHorUyWuOJ575OvIop5nxk9KoB5-Gd_DPKRXtUsPE8Hx-5eIClLeCiOUag1uO8myfnSdpQgZMBMH0mVEay8zKckftjWP7Gm1twQJ89Z9yQ"/>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden bg-surface-variant shadow-sm">
+<img class="w-full h-full object-cover" data-alt="top view of a pet bowl with dry food and some fresh toppers, bright studio lighting, clean background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrpMRcbCjwp9QPYKU-bnUhkScKHPWOEwSRwHZdBnmgjzZMPw2XEicNCudW6yvyLFjINsFp6tf6s11ma1V5wfr62VAAwJJepgiaGtafGP2k-87nJnzwxQ4QKAkAtSFczyRlPYlU-UsgnXWdKIHlTQcgiFwRs5pqyS6blP7gJZtok0aGWBQilA1FZ3XonEqG6Dl2mDuZrOWDItdjeqvBztn1Xax9m8uZLldOKEsl6LWco-T90VSKnPJI6sfxKHVevG8tAMSQGkTRNvg"/>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden bg-surface-variant shadow-sm">
+<img class="w-full h-full object-cover" data-alt="dog lying down comfortably on a soft rug, looking calm and relaxed, soft indoor lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfxNG-z_vfeT5B3uAsWFvFNSor2u3dAWoiPDx6LxT4_aFYThMZUWdmvzvlcr2ROCKFQb7Fx8vpyn8NFXab0R3__cmVfLJmMtxAe4MsbpSf5g8SDOuZ2Ed_m5OZd3xUpk4p3K8V_DA1KIeS1hpRpvxXAKO8doBIegd2E96WnUnNN58j8k3uEd1twbRrTPHeUOO02ry3fb902UqUl5TUqVR4TL_HSCFt3Y3paCkQ1-z1Oo2KrfNHvfveZNmH1x7LodDkW77oADfUPI4"/>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pt-3 pb-6 bg-white/95 dark:bg-stone-900/95 backdrop-blur-lg z-50 rounded-t-[32px] shadow-[0_-4px_20px_rgba(0,0,0,0.06)] border-t border-stone-100 dark:border-stone-800">
+<div class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 hover:text-[#8FB996] transition-colors cursor-pointer">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium">Hoy</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#8FB996] bg-[#8FB996]/10 rounded-2xl px-3 py-1 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="health_and_safety">health_and_safety</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium">Salud</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 hover:text-[#8FB996] transition-colors cursor-pointer">
+<span class="material-symbols-outlined" data-icon="restaurant">restaurant</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium">Comidas</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 hover:text-[#8FB996] transition-colors cursor-pointer">
+<span class="material-symbols-outlined" data-icon="medication">medication</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium">Medicinas</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 hover:text-[#8FB996] transition-colors cursor-pointer">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium">Más</span>
+</div>
+</nav>
+</body></html>
