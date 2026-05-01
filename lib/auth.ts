@@ -2,22 +2,10 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 
 import { demoContext, isDemoMode } from "@/lib/demo";
+export { protectedPrefixes } from "@/lib/routes";
 import { getSupabaseServerClient, hasSupabaseEnv } from "@/lib/supabaseServer";
 import type { AppContext, HouseholdMemberWithProfile } from "@/types/app";
 import type { UserRole } from "@/types/database";
-
-export const protectedPrefixes = [
-  "/hoy",
-  "/salud",
-  "/comidas",
-  "/medicinas",
-  "/insumos",
-  "/veterinaria",
-  "/resumen",
-  "/familia",
-  "/mas",
-  "/configuracion"
-];
 
 export const getCurrentUser = cache(async function getCurrentUser() {
   if (isDemoMode) {

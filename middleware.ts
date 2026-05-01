@@ -1,18 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-const protectedPrefixes = [
-  "/hoy",
-  "/salud",
-  "/comidas",
-  "/medicinas",
-  "/insumos",
-  "/veterinaria",
-  "/resumen",
-  "/familia",
-  "/mas",
-  "/configuracion"
-];
+import { isAuthPath, isProtectedPath } from "@/lib/routes";
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -56,10 +45,8 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
-  const isProtected = protectedPrefixes.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
-  );
-  const isAuthRoute = pathname === "/login" || pathname === "/signup";
+  const isProtected = isProtectedPath(pathname);
+  const isAuthRoute = isAuthPath(pathname);
 
   if (!user && isProtected) {
     return NextResponse.redirect(new URL("/login", request.url));
