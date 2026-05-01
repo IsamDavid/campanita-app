@@ -157,6 +157,16 @@ npm run typecheck
 npm run supabase:types
 ```
 
+## Cron de recordatorios
+
+En Vercel, `vercel.json` configura una llamada automática cada 5 minutos a:
+
+```txt
+/api/cron/reminders
+```
+
+Ese endpoint procesa recordatorios pendientes y envía web push a las suscripciones del household. Para que funcione en producción necesitas las variables `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` y `SUPABASE_SERVICE_ROLE_KEY`.
+
 ## Instalación local
 
 ```bash
