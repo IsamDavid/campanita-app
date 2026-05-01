@@ -349,5 +349,7 @@ Notas prácticas:
 - `npm install`
 - `npm run typecheck` ✅
 - `npm run lint` ✅
+- `npm run build` ✅
+- `npm run verify` ✅
 
-`npm run build` compila y pasa lint/typecheck, pero en este sandbox de Codex el worker final de Next.js termina con `exit code 1` sin stack útil después de esa fase. La base queda preparada para deploy en Vercel; conviene volver a ejecutar `npm run build` en tu máquina con `.env.local` real o directamente en Vercel para validar el paso final fuera de este entorno.
+`npm run verify` ejecuta `lint`, `typecheck` y `build` en orden para evitar carreras sobre `.next/types`.
