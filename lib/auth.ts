@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { cache } from "react";
 
 import { demoContext, isDemoMode } from "@/lib/demo";
 import { getSupabaseServerClient, hasSupabaseEnv } from "@/lib/supabaseServer";
@@ -18,7 +19,7 @@ export const protectedPrefixes = [
   "/configuracion"
 ];
 
-export async function getCurrentUser() {
+export const getCurrentUser = cache(async function getCurrentUser() {
   if (isDemoMode) {
     return { id: demoContext.userId } as any;
   }
@@ -28,7 +29,7 @@ export async function getCurrentUser() {
     data: { user }
   } = await supabase.auth.getUser();
   return user;
-}
+});
 
 export async function requireUser() {
   const user = await getCurrentUser();
@@ -38,7 +39,7 @@ export async function requireUser() {
   return user;
 }
 
-export async function getAppContext(): Promise<AppContext | null> {
+export const getAppContext = cache(async function getAppContext(): Promise<AppContext | null> {
   if (isDemoMode) return demoContext;
   if (!hasSupabaseEnv) return null;
   const supabase = await getSupabaseServerClient();
@@ -80,7 +81,7 @@ export async function getAppContext(): Promise<AppContext | null> {
     pet: pet ?? null,
     profile: profile ?? null
   };
-}
+});
 
 export async function requireAppContext() {
   const context = await getAppContext();
