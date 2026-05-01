@@ -4,8 +4,6 @@ import "@/app/globals.css";
 
 import { PwaSetup } from "@/components/layout/PwaSetup";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Campanita",
   description: "Control diario de salud, comidas, medicinas y seguimiento veterinario de Campanita.",
