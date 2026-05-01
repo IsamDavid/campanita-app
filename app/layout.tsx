@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import "@/app/globals.css";
 
 import { PwaSetup } from "@/components/layout/PwaSetup";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const dynamic = "force-dynamic";
 
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <PwaSetup />
         {children}
+        <SpeedInsights />
       </body>
     </html>
   );
