@@ -203,7 +203,7 @@ async function getProfileMap(userIds: string[]) {
 
 const getCachedHouseholdMembers = unstable_cache(
   async (householdId: string) => {
-    const supabase = await getSupabaseServerClient();
+    const supabase = getSupabaseServiceClient();
     const { data } = await supabase
       .from("household_members")
       .select("*, profiles(*)")
@@ -218,7 +218,7 @@ const getCachedHouseholdMembers = unstable_cache(
 
 const getCachedSupplies = unstable_cache(
   async (householdId: string, petId: string) => {
-    const supabase = await getSupabaseServerClient();
+    const supabase = getSupabaseServiceClient();
     const { data } = await supabase
       .from("supplies")
       .select("*")
@@ -234,7 +234,7 @@ const getCachedSupplies = unstable_cache(
 
 const getCachedAlertSupplies = unstable_cache(
   async (householdId: string) => {
-    const supabase = await getSupabaseServerClient();
+    const supabase = getSupabaseServiceClient();
     const { data } = await supabase
       .from("supplies")
       .select("*")
@@ -251,7 +251,7 @@ const getCachedAlertSupplies = unstable_cache(
 
 const getCachedUpcomingVaccines = unstable_cache(
   async (householdId: string) => {
-    const supabase = await getSupabaseServerClient();
+    const supabase = getSupabaseServiceClient();
     const { data } = await supabase
       .from("vaccines")
       .select("*")
@@ -268,7 +268,7 @@ const getCachedUpcomingVaccines = unstable_cache(
 
 const getCachedVetVaccines = unstable_cache(
   async (householdId: string, petId: string) => {
-    const supabase = await getSupabaseServerClient();
+    const supabase = getSupabaseServiceClient();
     const { data } = await supabase
       .from("vaccines")
       .select("*")
