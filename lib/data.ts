@@ -425,6 +425,42 @@ export async function getStoolLogById(context: AppContext, id: string) {
   };
 }
 
+export async function getStoolLogNavigation(context: AppContext, currentId: string, limit = 30) {
+  if (isDemoMode) {
+    return demoStoolLogs
+      .slice(0, limit)
+      .map((item) => ({
+        id: item.id,
+        occurred_at: item.occurred_at,
+        thumbnail_signed_url: item.thumbnail_signed_url ?? item.photo_signed_url ?? null,
+        active: item.id === currentId
+      }));
+  }
+  if (!hasSupabaseEnv) return [];
+  if (!context.pet) return [];
+
+  const supabase = await getSupabaseServerClient();
+  const { data } = await supabase
+    .from("stool_logs")
+    .select("id, occurred_at, photo_url, thumbnail_url")
+    .eq("household_id", context.household.id)
+    .eq("pet_id", context.pet.id)
+    .order("occurred_at", { ascending: false })
+    .limit(limit);
+
+  return Promise.all(
+    (data ?? []).map(async (item) => ({
+      id: item.id,
+      occurred_at: item.occurred_at,
+      thumbnail_signed_url: await getSignedAssetUrl(
+        STORAGE_BUCKETS.stoolPhotos,
+        item.thumbnail_url ?? item.photo_url
+      ),
+      active: item.id === currentId
+    }))
+  );
+}
+
 export async function getVomitLogs(context: AppContext, limit = 30) {
   if (isDemoMode) return [];
   if (!hasSupabaseEnv) return [];
