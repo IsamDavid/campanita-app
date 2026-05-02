@@ -1,4 +1,4 @@
-import { Camera, HeartPulse, Pill, ShieldPlus, Utensils } from "lucide-react";
+import { Camera, ClipboardCheck, HeartPulse, Pill, ShieldPlus, Utensils } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -9,7 +9,8 @@ const icons = {
   meal: Utensils,
   stool: Camera,
   symptom: HeartPulse,
-  vet: ShieldPlus
+  vet: ShieldPlus,
+  care: ClipboardCheck
 };
 
 export function FamilyActivity({

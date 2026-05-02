@@ -45,6 +45,32 @@ export const medicationSchema = z.object({
   days_of_week: z.array(z.number().min(0).max(6)).min(1, "Selecciona al menos un día")
 });
 
+export const careTaskSchema = z.object({
+  type: z.enum([
+    "vet_appointment",
+    "walk",
+    "training",
+    "eye_cleaning",
+    "ear_cleaning",
+    "brushing",
+    "bath",
+    "grooming",
+    "other"
+  ]),
+  title: z.string().min(2, "Escribe un nombre"),
+  description: z.string().max(600).optional().or(z.literal("")),
+  start_date: z.string().min(1, "Fecha requerida"),
+  end_date: z.string().optional().or(z.literal("")),
+  time_of_day: z.string().min(1, "Selecciona la hora"),
+  days_of_week: z.array(z.number().min(0).max(6)),
+  repeat_rule: z.enum(["once", "daily", "weekly", "monthly", "every_n_days"]),
+  repeat_interval: z.coerce.number().min(1).max(365),
+  reminder_minutes_before: z.coerce.number().min(0).max(10080)
+}).refine((data) => data.repeat_rule !== "weekly" || data.days_of_week.length > 0, {
+  message: "Selecciona al menos un día",
+  path: ["days_of_week"]
+});
+
 export const supplySchema = z.object({
   name: z.string().min(2, "Escribe el nombre"),
   category: z.string().min(2, "Escribe la categoría"),

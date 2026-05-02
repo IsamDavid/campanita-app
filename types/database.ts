@@ -3,7 +3,19 @@ export type StoolConsistency = "liquida" | "blanda" | "normal" | "dura";
 export type CheckStatus = "pendiente" | "dada" | "saltada";
 export type MealIntake = "bien" | "poco" | "nada";
 export type SupplyStatus = "suficiente" | "pronto_se_acaba" | "urgente";
-export type ReminderType = "meal" | "medication" | "supply" | "vet" | "custom";
+export type CareTaskType =
+  | "vet_appointment"
+  | "walk"
+  | "training"
+  | "eye_cleaning"
+  | "ear_cleaning"
+  | "brushing"
+  | "bath"
+  | "grooming"
+  | "other";
+export type CareRepeatRule = "once" | "daily" | "weekly" | "monthly" | "every_n_days";
+export type CareCheckStatus = "pendiente" | "hecha" | "saltada";
+export type ReminderType = "meal" | "medication" | "care" | "supply" | "vet" | "custom";
 
 type Timestamp = string;
 type UUID = string;
@@ -464,6 +476,76 @@ export interface Database {
           created_at?: Timestamp;
         };
         Update: Partial<Database["public"]["Tables"]["documents"]["Insert"]>;
+      };
+      care_tasks: {
+        Row: {
+          id: UUID;
+          household_id: UUID;
+          pet_id: UUID;
+          type: CareTaskType;
+          title: string;
+          description: string | null;
+          start_date: string;
+          end_date: string | null;
+          time_of_day: string;
+          days_of_week: number[];
+          repeat_rule: CareRepeatRule;
+          repeat_interval: number;
+          reminder_minutes_before: number;
+          active: boolean;
+          created_by: UUID | null;
+          created_at: Timestamp;
+          updated_at: Timestamp;
+        };
+        Insert: {
+          id?: UUID;
+          household_id: UUID;
+          pet_id: UUID;
+          type: CareTaskType;
+          title: string;
+          description?: string | null;
+          start_date: string;
+          end_date?: string | null;
+          time_of_day: string;
+          days_of_week?: number[];
+          repeat_rule?: CareRepeatRule;
+          repeat_interval?: number;
+          reminder_minutes_before?: number;
+          active?: boolean;
+          created_by?: UUID | null;
+          created_at?: Timestamp;
+          updated_at?: Timestamp;
+        };
+        Update: Partial<Database["public"]["Tables"]["care_tasks"]["Insert"]>;
+      };
+      care_task_checks: {
+        Row: {
+          id: UUID;
+          care_task_id: UUID;
+          household_id: UUID;
+          pet_id: UUID;
+          scheduled_at: Timestamp;
+          completed_at: Timestamp | null;
+          status: CareCheckStatus;
+          completed_by: UUID | null;
+          notes: string | null;
+          created_at: Timestamp;
+          updated_at: Timestamp;
+        };
+        Insert: {
+          id?: UUID;
+          care_task_id: UUID;
+          household_id: UUID;
+          pet_id: UUID;
+          scheduled_at: Timestamp;
+          completed_at?: Timestamp | null;
+          status?: CareCheckStatus;
+          completed_by?: UUID | null;
+          notes?: string | null;
+          created_at?: Timestamp;
+          updated_at?: Timestamp;
+        };
+        Update: Partial<Database["public"]["Tables"]["care_task_checks"]["Insert"]>;
       };
       push_subscriptions: {
         Row: {

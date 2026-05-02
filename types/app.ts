@@ -14,6 +14,8 @@ export type MedicationCheck = Database["public"]["Tables"]["medication_checks"][
 export type Supply = Database["public"]["Tables"]["supplies"]["Row"];
 export type VetVisit = Database["public"]["Tables"]["vet_visits"]["Row"];
 export type Vaccine = Database["public"]["Tables"]["vaccines"]["Row"];
+export type CareTask = Database["public"]["Tables"]["care_tasks"]["Row"];
+export type CareTaskCheck = Database["public"]["Tables"]["care_task_checks"]["Row"];
 export type Reminder = Database["public"]["Tables"]["reminders"]["Row"];
 
 export interface HouseholdMemberWithProfile {
@@ -35,11 +37,11 @@ export interface AppContext {
 
 export interface DayCheckItem {
   id: string;
-  type: "meal" | "medication";
+  type: "meal" | "medication" | "care";
   title: string;
   subtitle: string;
   scheduledAt: string;
-  status: "pendiente" | "dada" | "saltada";
+  status: "pendiente" | "dada" | "hecha" | "saltada";
   checkId: string;
   notes: string | null;
   intake?: "bien" | "poco" | "nada" | null;
@@ -65,7 +67,7 @@ export interface FamilyActivityItem {
   subtitle: string;
   created_at: string;
   relative_label: string;
-  icon: "medication" | "meal" | "stool" | "symptom" | "vet";
-  undoType?: "meal" | "medication";
+  icon: "medication" | "meal" | "stool" | "symptom" | "vet" | "care";
+  undoType?: "meal" | "medication" | "care";
   undoId?: string;
 }

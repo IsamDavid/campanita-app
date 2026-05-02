@@ -39,7 +39,12 @@ export function PendingTaskCard({
     }
 
     const supabase = getSupabaseBrowserClient();
-    const table = item.type === "meal" ? "meal_checks" : "medication_checks";
+    const table =
+      item.type === "meal"
+        ? "meal_checks"
+        : item.type === "medication"
+          ? "medication_checks"
+          : "care_task_checks";
 
     setBusy(action);
     setMessage(null);
@@ -52,7 +57,10 @@ export function PendingTaskCard({
       return;
     }
 
-    if (current.status === "dada" && (action === "dada" || action === "bien" || action === "poco")) {
+    if (
+      (current.status === "dada" || current.status === "hecha") &&
+      (action === "dada" || action === "bien" || action === "poco")
+    ) {
       setBusy(null);
       setMessage("Ese pendiente ya fue marcado.");
       return;
@@ -69,14 +77,23 @@ export function PendingTaskCard({
         ? "dada"
         : mealIntake === "nada"
           ? "saltada"
-          : action;
+          : item.type === "care" && action === "dada"
+            ? "hecha"
+            : action;
 
     const payload =
       action === "nota"
         ? { notes: note }
+        : item.type === "meal"
+          ? {
+              status,
+              intake: mealIntake,
+              completed_at: new Date().toISOString(),
+              completed_by: userId,
+              notes: note
+            }
         : {
             status,
-            intake: item.type === "meal" ? mealIntake : undefined,
             completed_at: new Date().toISOString(),
             completed_by: userId,
             notes: note
@@ -96,6 +113,7 @@ export function PendingTaskCard({
 
   const tone =
     item.status === "dada"
+      || item.status === "hecha"
       ? "success"
       : item.status === "saltada"
         ? "danger"
@@ -117,6 +135,8 @@ export function PendingTaskCard({
         <StatusBadge tone={tone}>
           {item.status === "dada"
             ? "Dada"
+            : item.status === "hecha"
+              ? "Hecha"
             : item.status === "saltada"
               ? "Saltada"
               : "Pendiente"}
@@ -175,7 +195,7 @@ export function PendingTaskCard({
         <div className="grid grid-cols-3 gap-2">
           <Button type="button" className="px-3 text-xs" disabled={busy !== null} onClick={() => updateCheck("dada")}>
             <CheckCircle2 className="h-4 w-4" />
-            Ya se dio
+            {item.type === "care" ? "Hecho" : "Ya se dio"}
           </Button>
           <Button
             type="button"

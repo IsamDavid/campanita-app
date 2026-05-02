@@ -80,7 +80,12 @@ export function TodayDashboard({
     if (!confirmed) return;
 
     const undoKey = `${item.undoType}-${item.undoId}`;
-    const table = item.undoType === "meal" ? "meal_checks" : "medication_checks";
+    const table =
+      item.undoType === "meal"
+        ? "meal_checks"
+        : item.undoType === "medication"
+          ? "medication_checks"
+          : "care_task_checks";
     const payload =
       item.undoType === "meal"
         ? {

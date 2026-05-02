@@ -287,6 +287,41 @@ create table if not exists public.vet_visits (
   updated_at timestamptz not null default timezone('utc', now())
 );
 
+create table if not exists public.care_tasks (
+  id uuid primary key default gen_random_uuid(),
+  household_id uuid not null references public.households (id) on delete cascade,
+  pet_id uuid not null references public.pets (id) on delete cascade,
+  type text not null check (type in ('vet_appointment', 'walk', 'training', 'eye_cleaning', 'ear_cleaning', 'brushing', 'bath', 'grooming', 'other')),
+  title text not null,
+  description text,
+  start_date date not null,
+  end_date date,
+  time_of_day time not null,
+  days_of_week int[] not null default '{}',
+  repeat_rule text not null default 'weekly' check (repeat_rule in ('once', 'daily', 'weekly', 'monthly', 'every_n_days')),
+  repeat_interval int not null default 1 check (repeat_interval > 0),
+  reminder_minutes_before int not null default 0,
+  active boolean not null default true,
+  created_by uuid references auth.users (id) on delete set null,
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now())
+);
+
+create table if not exists public.care_task_checks (
+  id uuid primary key default gen_random_uuid(),
+  care_task_id uuid not null references public.care_tasks (id) on delete cascade,
+  household_id uuid not null references public.households (id) on delete cascade,
+  pet_id uuid not null references public.pets (id) on delete cascade,
+  scheduled_at timestamptz not null,
+  completed_at timestamptz,
+  status text not null default 'pendiente' check (status in ('pendiente', 'hecha', 'saltada')),
+  completed_by uuid references auth.users (id) on delete set null,
+  notes text,
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now()),
+  unique (care_task_id, scheduled_at)
+);
+
 create table if not exists public.vaccines (
   id uuid primary key default gen_random_uuid(),
   household_id uuid not null references public.households (id) on delete cascade,
@@ -328,7 +363,7 @@ create table if not exists public.reminders (
   id uuid primary key default gen_random_uuid(),
   household_id uuid not null references public.households (id) on delete cascade,
   pet_id uuid not null references public.pets (id) on delete cascade,
-  type text not null check (type in ('meal', 'medication', 'supply', 'vet', 'custom')),
+  type text not null check (type in ('meal', 'medication', 'care', 'supply', 'vet', 'custom')),
   related_id uuid,
   title text not null,
   body text,
@@ -352,6 +387,12 @@ create index if not exists idx_medication_schedules_household_pet on public.medi
 create index if not exists idx_medication_checks_household_pet on public.medication_checks (household_id, pet_id, scheduled_at desc);
 create index if not exists idx_supplies_household_pet on public.supplies (household_id, pet_id);
 create index if not exists idx_vet_visits_household_pet on public.vet_visits (household_id, pet_id, visit_date desc);
+create index if not exists idx_care_tasks_household_pet on public.care_tasks (household_id, pet_id, active);
+create index if not exists idx_care_tasks_pet_id on public.care_tasks (pet_id);
+create index if not exists idx_care_tasks_created_by on public.care_tasks (created_by);
+create index if not exists idx_care_task_checks_household_pet on public.care_task_checks (household_id, pet_id, scheduled_at desc);
+create index if not exists idx_care_task_checks_pet_id on public.care_task_checks (pet_id);
+create index if not exists idx_care_task_checks_completed_by on public.care_task_checks (completed_by);
 create index if not exists idx_vaccines_household_pet on public.vaccines (household_id, pet_id);
 create index if not exists idx_documents_household_pet on public.documents (household_id, pet_id);
 create index if not exists idx_push_subscriptions_household_user on public.push_subscriptions (household_id, user_id);
@@ -392,10 +433,22 @@ create trigger set_vet_visits_updated_at
 before update on public.vet_visits
 for each row execute function public.set_updated_at();
 
+drop trigger if exists set_care_tasks_updated_at on public.care_tasks;
+create trigger set_care_tasks_updated_at
+before update on public.care_tasks
+for each row execute function public.set_updated_at();
+
+drop trigger if exists set_care_task_checks_updated_at on public.care_task_checks;
+create trigger set_care_task_checks_updated_at
+before update on public.care_task_checks
+for each row execute function public.set_updated_at();
+
 alter table public.meal_checks replica identity full;
 alter table public.medication_checks replica identity full;
+alter table public.care_task_checks replica identity full;
 alter table public.stool_logs replica identity full;
 
 alter publication supabase_realtime add table public.meal_checks;
 alter publication supabase_realtime add table public.medication_checks;
+alter publication supabase_realtime add table public.care_task_checks;
 alter publication supabase_realtime add table public.stool_logs;

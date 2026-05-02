@@ -16,7 +16,7 @@ export async function syncReminderForSchedule({
 }: {
   householdId: string;
   petId: string;
-  type: "meal" | "medication";
+  type: "meal" | "medication" | "care";
   relatedId: string;
   title: string;
   body: string;

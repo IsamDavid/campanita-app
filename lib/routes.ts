@@ -3,6 +3,7 @@ export const protectedPrefixes = [
   "/salud",
   "/comidas",
   "/medicinas",
+  "/agenda",
   "/insumos",
   "/veterinaria",
   "/resumen",

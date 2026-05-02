@@ -51,6 +51,8 @@ alter table public.medication_schedules enable row level security;
 alter table public.medication_checks enable row level security;
 alter table public.supplies enable row level security;
 alter table public.vet_visits enable row level security;
+alter table public.care_tasks enable row level security;
+alter table public.care_task_checks enable row level security;
 alter table public.vaccines enable row level security;
 alter table public.documents enable row level security;
 alter table public.push_subscriptions enable row level security;
@@ -330,6 +332,44 @@ with check (public.can_manage_household(household_id));
 drop policy if exists "vet_visits_update_editors" on public.vet_visits;
 create policy "vet_visits_update_editors"
 on public.vet_visits
+for update
+using (public.can_manage_household(household_id))
+with check (public.can_manage_household(household_id));
+
+drop policy if exists "care_tasks_select_member" on public.care_tasks;
+create policy "care_tasks_select_member"
+on public.care_tasks
+for select
+using (public.is_household_member(household_id));
+
+drop policy if exists "care_tasks_insert_editors" on public.care_tasks;
+create policy "care_tasks_insert_editors"
+on public.care_tasks
+for insert
+with check (public.can_manage_household(household_id));
+
+drop policy if exists "care_tasks_update_editors" on public.care_tasks;
+create policy "care_tasks_update_editors"
+on public.care_tasks
+for update
+using (public.can_manage_household(household_id))
+with check (public.can_manage_household(household_id));
+
+drop policy if exists "care_task_checks_select_member" on public.care_task_checks;
+create policy "care_task_checks_select_member"
+on public.care_task_checks
+for select
+using (public.is_household_member(household_id));
+
+drop policy if exists "care_task_checks_insert_editors" on public.care_task_checks;
+create policy "care_task_checks_insert_editors"
+on public.care_task_checks
+for insert
+with check (public.can_manage_household(household_id));
+
+drop policy if exists "care_task_checks_update_editors" on public.care_task_checks;
+create policy "care_task_checks_update_editors"
+on public.care_task_checks
 for update
 using (public.can_manage_household(household_id))
 with check (public.can_manage_household(household_id));

@@ -1,5 +1,6 @@
 import {
   addDays,
+  differenceInCalendarDays,
   isAfter,
   subDays
 } from "date-fns";
@@ -15,6 +16,7 @@ import {
   relativeFromNow,
   startOfAppDayIso
 } from "@/lib/dates";
+import { formatCareTaskType } from "@/lib/care";
 import {
   demoMembers,
   demoStoolLogs,
@@ -36,6 +38,8 @@ import {
 } from "@/lib/supabaseServer";
 import type {
   AppContext,
+  CareTask,
+  CareTaskCheck,
   FamilyActivityItem,
   HouseholdMemberWithProfile,
   Meal,
@@ -73,6 +77,23 @@ function formatSymptomType(type: string) {
   };
 
   return labels[type] ?? type.replaceAll("_", " ");
+}
+
+function shouldRunCareTaskToday(task: CareTask, dateStamp: string, weekday: number) {
+  if (!task.active) return false;
+  if (task.start_date > dateStamp) return false;
+  if (task.end_date && task.end_date < dateStamp) return false;
+
+  if (task.repeat_rule === "once") return task.start_date === dateStamp;
+  if (task.repeat_rule === "daily") return true;
+  if (task.repeat_rule === "weekly") return task.days_of_week.includes(weekday);
+  if (task.repeat_rule === "monthly") return task.start_date.slice(8, 10) === dateStamp.slice(8, 10);
+
+  const elapsedDays = differenceInCalendarDays(
+    new Date(`${dateStamp}T12:00:00`),
+    new Date(`${task.start_date}T12:00:00`)
+  );
+  return elapsedDays >= 0 && elapsedDays % task.repeat_interval === 0;
 }
 
 async function ensureMealChecks(context: AppContext) {
@@ -191,8 +212,57 @@ async function ensureMedicationChecks(context: AppContext) {
   }
 }
 
+async function ensureCareTaskChecks(context: AppContext) {
+  if (!hasSupabaseEnv) return;
+  if (!context.pet) return;
+
+  const supabase = getSupabaseServiceClient();
+  const today = new Date();
+  const weekday = getAppWeekday(today);
+  const dateStamp = getAppDateKey(today);
+
+  const { data: tasks } = await supabase
+    .from("care_tasks")
+    .select("*")
+    .eq("household_id", context.household.id)
+    .eq("pet_id", context.pet.id)
+    .eq("active", true);
+
+  for (const task of ((tasks ?? []) as CareTask[]).filter((item) => shouldRunCareTaskToday(item, dateStamp, weekday))) {
+    const scheduledAt = fromAppLocalDateTime(dateStamp, task.time_of_day).toISOString();
+    const { data: existing } = await supabase
+      .from("care_task_checks")
+      .select("id")
+      .eq("care_task_id", task.id)
+      .eq("scheduled_at", scheduledAt)
+      .maybeSingle();
+
+    if (!existing) {
+      await supabase.from("care_task_checks").insert({
+        care_task_id: task.id,
+        household_id: context.household.id,
+        pet_id: context.pet.id,
+        scheduled_at: scheduledAt,
+        status: "pendiente"
+      });
+
+      await syncReminderForSchedule({
+        householdId: context.household.id,
+        petId: context.pet.id,
+        type: "care",
+        relatedId: task.id,
+        title: task.title,
+        body: task.description || `${formatCareTaskType(task.type)} programado para ${formatClock(scheduledAt)}`,
+        scheduledAt,
+        reminderMinutesBefore: task.reminder_minutes_before,
+        createdBy: context.userId
+      });
+    }
+  }
+}
+
 export async function ensureTodayChecks(context: AppContext) {
-  await Promise.all([ensureMealChecks(context), ensureMedicationChecks(context)]);
+  await Promise.all([ensureMealChecks(context), ensureMedicationChecks(context), ensureCareTaskChecks(context)]);
 }
 
 async function getProfileMap(userIds: string[]) {
@@ -495,8 +565,10 @@ export async function getTodayDashboardData(context: AppContext) {
   const [
     mealChecksRes,
     medicationChecksRes,
+    careChecksRes,
     mealsRes,
     medicationsRes,
+    careTasksRes,
     supplies,
     vaccines,
     recentStoolsRes,
@@ -519,8 +591,17 @@ export async function getTodayDashboardData(context: AppContext) {
       .gte("scheduled_at", from)
       .lte("scheduled_at", to)
       .order("scheduled_at", { ascending: true }),
+    supabase
+      .from("care_task_checks")
+      .select("*")
+      .eq("household_id", context.household.id)
+      .eq("pet_id", context.pet.id)
+      .gte("scheduled_at", from)
+      .lte("scheduled_at", to)
+      .order("scheduled_at", { ascending: true }),
     supabase.from("meals").select("*").eq("household_id", context.household.id),
     supabase.from("medications").select("*").eq("household_id", context.household.id),
+    supabase.from("care_tasks").select("*").eq("household_id", context.household.id).eq("pet_id", context.pet.id),
     getCachedAlertSupplies(context.household.id),
     getCachedUpcomingVaccines(context.household.id),
     supabase
@@ -548,11 +629,13 @@ export async function getTodayDashboardData(context: AppContext) {
 
   const mealChecks = (mealChecksRes.data ?? []) as MealCheck[];
   const medicationChecks = (medicationChecksRes.data ?? []) as MedicationCheck[];
+  const careChecks = (careChecksRes.data ?? []) as CareTaskCheck[];
   const meals = new Map(((mealsRes.data ?? []) as Meal[]).map((item) => [item.id, item]));
   const medications = new Map(((medicationsRes.data ?? []) as Medication[]).map((item) => [item.id, item]));
+  const careTasks = new Map(((careTasksRes.data ?? []) as CareTask[]).map((item) => [item.id, item]));
 
   const profileMap = await getProfileMap(
-    [...mealChecks, ...medicationChecks]
+    [...mealChecks, ...medicationChecks, ...careChecks]
       .map((item) => item.completed_by)
       .filter(Boolean) as string[]
   );
@@ -581,6 +664,23 @@ export async function getTodayDashboardData(context: AppContext) {
         type: "medication" as const,
         title: medication?.name ?? "Medicina",
         subtitle: [formatClock(item.scheduled_at), medication?.dosage].filter(Boolean).join(" • "),
+        scheduledAt: item.scheduled_at,
+        status: item.status,
+        checkId: item.id,
+        notes: item.notes,
+        completedAt: item.completed_at ?? undefined,
+        completedByName: item.completed_by ? profileMap.get(item.completed_by) ?? "Familia" : null
+      };
+    }),
+    ...careChecks.map((item) => {
+      const task = careTasks.get(item.care_task_id);
+      return {
+        id: `care-${item.id}`,
+        type: "care" as const,
+        title: task?.title ?? "Cuidado",
+        subtitle: [formatClock(item.scheduled_at), task ? formatCareTaskType(task.type) : null]
+          .filter(Boolean)
+          .join(" • "),
         scheduledAt: item.scheduled_at,
         status: item.status,
         checkId: item.id,
@@ -686,6 +786,18 @@ export async function getTodayDashboardData(context: AppContext) {
         icon: "medication" as const,
         undoType: "medication" as const,
         undoId: item.id
+      })),
+    ...careChecks
+      .filter((item) => item.completed_at)
+      .map((item) => ({
+        id: item.id,
+        title: item.status === "hecha" ? "Cuidado hecho" : "Cuidado saltado",
+        subtitle: careTasks.get(item.care_task_id)?.title ?? "Cuidado",
+        created_at: item.completed_at!,
+        relative_label: relativeFromNow(item.completed_at!),
+        icon: "care" as const,
+        undoType: "care" as const,
+        undoId: item.id
       }))
   ]
     .sort((a, b) => b.created_at.localeCompare(a.created_at))
@@ -787,6 +899,49 @@ export async function getMedicationsPageData(context: AppContext) {
     medications: (medicationsRes.data ?? []) as Medication[],
     schedules: schedulesRes.data ?? [],
     checks: ((checksRes.data ?? []) as MedicationCheck[]).map((item) => ({
+      ...item,
+      completed_by_name: item.completed_by ? profileMap.get(item.completed_by) ?? "Familia" : null
+    }))
+  };
+}
+
+export async function getAgendaPageData(context: AppContext) {
+  if (isDemoMode) return { tasks: [], checks: [] };
+  if (!hasSupabaseEnv) return { tasks: [], checks: [] };
+  if (!context.pet) return { tasks: [], checks: [] };
+
+  await ensureCareTaskChecks(context);
+
+  const supabase = await getSupabaseServerClient();
+  const from = startOfAppDayIso(new Date());
+  const to = endOfAppDayIso(new Date());
+  const [tasksRes, checksRes] = await Promise.all([
+    supabase
+      .from("care_tasks")
+      .select("*")
+      .eq("household_id", context.household.id)
+      .eq("pet_id", context.pet.id)
+      .order("active", { ascending: false })
+      .order("start_date", { ascending: true })
+      .order("time_of_day", { ascending: true }),
+    supabase
+      .from("care_task_checks")
+      .select("*")
+      .eq("household_id", context.household.id)
+      .eq("pet_id", context.pet.id)
+      .gte("scheduled_at", from)
+      .lte("scheduled_at", to)
+      .order("scheduled_at", { ascending: true })
+  ]);
+
+  const checks = (checksRes.data ?? []) as CareTaskCheck[];
+  const profileMap = await getProfileMap(
+    checks.map((item) => item.completed_by).filter(Boolean) as string[]
+  );
+
+  return {
+    tasks: (tasksRes.data ?? []) as CareTask[],
+    checks: checks.map((item) => ({
       ...item,
       completed_by_name: item.completed_by ? profileMap.get(item.completed_by) ?? "Familia" : null
     }))

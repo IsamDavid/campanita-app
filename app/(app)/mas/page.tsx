@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   Bell,
   Boxes,
+  CalendarDays,
   ChevronRight,
   FileText,
   Settings2,
@@ -25,6 +26,12 @@ const sections = [
     title: "Insumos",
     description: "Inventario, compras y alertas de reposición.",
     icon: Boxes
+  },
+  {
+    href: "/agenda",
+    title: "Agenda",
+    description: "Paseos, limpiezas, citas y otros cuidados.",
+    icon: CalendarDays
   },
   {
     href: "/veterinaria",
