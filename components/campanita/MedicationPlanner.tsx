@@ -56,6 +56,18 @@ export function MedicationPlanner({
     () => new Map(medications.map((item) => [item.id, item])),
     [medications]
   );
+  const activeMedications = useMemo(
+    () => medications.filter((item) => item.active),
+    [medications]
+  );
+  const finalizedMedications = useMemo(
+    () => medications.filter((item) => !item.active),
+    [medications]
+  );
+  const visibleChecks = useMemo(
+    () => checks.filter((check) => medicationMap.get(check.medication_id)?.active !== false),
+    [checks, medicationMap]
+  );
 
   async function handleCreate(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -238,9 +250,9 @@ export function MedicationPlanner({
 
       <section className="space-y-3">
         <h2 className="text-lg font-bold">Checks de hoy</h2>
-        {checks.length ? (
+        {visibleChecks.length ? (
           <div className="space-y-3">
-            {checks.map((check) => {
+            {visibleChecks.map((check) => {
               const medication = medicationMap.get(check.medication_id);
               if (!medication) return null;
 
@@ -275,13 +287,14 @@ export function MedicationPlanner({
 
       <section className="space-y-3">
         <h2 className="text-lg font-bold">Medicinas activas</h2>
-        {medications.length ? (
+        {activeMedications.length ? (
           <div className="space-y-3">
-            {medications.map((medication) => (
+            {activeMedications.map((medication) => (
               <MedicationCard
                 key={medication.id}
                 medication={medication}
-                check={checks.find((item) => item.medication_id === medication.id)}
+                check={visibleChecks.find((item) => item.medication_id === medication.id)}
+                role={context.role}
               />
             ))}
           </div>
@@ -292,6 +305,17 @@ export function MedicationPlanner({
           />
         )}
       </section>
+
+      {finalizedMedications.length ? (
+        <section className="space-y-3">
+          <h2 className="text-lg font-bold">Tratamientos finalizados</h2>
+          <div className="space-y-3">
+            {finalizedMedications.map((medication) => (
+              <MedicationCard key={medication.id} medication={medication} role={context.role} />
+            ))}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

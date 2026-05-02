@@ -7,7 +7,14 @@ import {
   subDays
 } from "date-fns";
 
-import { formatClock, formatLongDate, relativeFromNow } from "@/lib/dates";
+import {
+  formatClock,
+  formatLongDate,
+  fromAppLocalDateTime,
+  getAppDateKey,
+  getAppWeekday,
+  relativeFromNow
+} from "@/lib/dates";
 import {
   demoMembers,
   demoStoolLogs,
@@ -72,8 +79,8 @@ async function ensureMealChecks(context: AppContext) {
 
   const supabase = getSupabaseServiceClient();
   const today = new Date();
-  const weekday = today.getDay();
-  const dateStamp = format(today, "yyyy-MM-dd");
+  const weekday = getAppWeekday(today);
+  const dateStamp = getAppDateKey(today);
 
   const { data: schedules } = await supabase
     .from("meal_schedules")
@@ -84,7 +91,7 @@ async function ensureMealChecks(context: AppContext) {
     .contains("days_of_week", [weekday]);
 
   for (const schedule of schedules ?? []) {
-    const scheduledAt = new Date(`${dateStamp}T${schedule.time_of_day}`);
+    const scheduledAt = fromAppLocalDateTime(dateStamp, schedule.time_of_day);
     const { data: existing } = await supabase
       .from("meal_checks")
       .select("id")
@@ -129,8 +136,8 @@ async function ensureMedicationChecks(context: AppContext) {
 
   const supabase = getSupabaseServiceClient();
   const today = new Date();
-  const weekday = today.getDay();
-  const dateStamp = format(today, "yyyy-MM-dd");
+  const weekday = getAppWeekday(today);
+  const dateStamp = getAppDateKey(today);
 
   const { data: schedules } = await supabase
     .from("medication_schedules")
@@ -141,7 +148,16 @@ async function ensureMedicationChecks(context: AppContext) {
     .contains("days_of_week", [weekday]);
 
   for (const schedule of schedules ?? []) {
-    const scheduledAt = new Date(`${dateStamp}T${schedule.time_of_day}`);
+    const scheduledAt = fromAppLocalDateTime(dateStamp, schedule.time_of_day);
+    const { data: medication } = await supabase
+      .from("medications")
+      .select("id, name, active, end_date")
+      .eq("id", schedule.medication_id)
+      .maybeSingle();
+
+    if (!medication?.active) continue;
+    if (medication.end_date && medication.end_date < dateStamp) continue;
+
     const { data: existing } = await supabase
       .from("medication_checks")
       .select("id")
@@ -150,12 +166,6 @@ async function ensureMedicationChecks(context: AppContext) {
       .maybeSingle();
 
     if (!existing) {
-      const { data: medication } = await supabase
-        .from("medications")
-        .select("id, name")
-        .eq("id", schedule.medication_id)
-        .maybeSingle();
-
       await supabase.from("medication_checks").insert({
         household_id: context.household.id,
         pet_id: context.pet.id,
