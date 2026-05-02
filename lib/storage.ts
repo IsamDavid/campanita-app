@@ -1,5 +1,6 @@
 export const STORAGE_BUCKETS = {
   stoolPhotos: "stool-photos",
+  symptomPhotos: "symptom-photos",
   documents: "documents",
   petMedia: "pet-media",
   prescriptions: "prescriptions"

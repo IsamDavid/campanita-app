@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { Camera, CircleAlert, Stethoscope, UtensilsCrossed } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
 import { isDemoMode } from "@/lib/demo";
+import { buildStoragePath, STORAGE_BUCKETS } from "@/lib/storage";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
 import type { AppContext } from "@/types/app";
 
@@ -43,15 +44,43 @@ export function QuickActions({
   context: AppContext;
 }) {
   const [message, setMessage] = useState<string | null>(null);
+  const [savingType, setSavingType] = useState<string | null>(null);
+  const vomitPhotoInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  async function createSymptom(type: string) {
+  async function createSymptom(type: string, photo?: File | null) {
     if (!context.pet) return;
     if (isDemoMode) {
       setMessage(`Modo exploracion: "${type}" no se guarda.`);
       return;
     }
     const supabase = getSupabaseBrowserClient();
+    setSavingType(type);
+    setMessage(null);
+
+    let photoPath: string | null = null;
+
+    if (photo) {
+      photoPath = buildStoragePath({
+        householdId: context.household.id,
+        petId: context.pet.id,
+        category: "vomito",
+        fileName: photo.name
+      });
+
+      const upload = await supabase.storage
+        .from(STORAGE_BUCKETS.symptomPhotos)
+        .upload(photoPath, photo, {
+          contentType: photo.type,
+          upsert: false
+        });
+
+      if (upload.error) {
+        setSavingType(null);
+        setMessage(upload.error.message);
+        return;
+      }
+    }
 
     const { error } = await supabase.from("symptom_logs").insert({
       household_id: context.household.id,
@@ -59,17 +88,32 @@ export function QuickActions({
       type,
       severity: "media",
       notes: "",
+      photo_url: photoPath,
       occurred_at: new Date().toISOString(),
       created_by: context.userId
     });
 
     if (error) {
+      if (photoPath) {
+        await supabase.storage.from(STORAGE_BUCKETS.symptomPhotos).remove([photoPath]);
+      }
+      setSavingType(null);
       setMessage(error.message);
       return;
     }
 
-    setMessage("Registro rápido guardado.");
+    setSavingType(null);
+    setMessage(photoPath ? "Registro rápido guardado con foto." : "Registro rápido guardado.");
     router.refresh();
+  }
+
+  function handleSymptomClick(type: string) {
+    if (type === "vomito") {
+      vomitPhotoInputRef.current?.click();
+      return;
+    }
+
+    createSymptom(type);
   }
 
   return (
@@ -98,12 +142,31 @@ export function QuickActions({
           }
 
           return (
-            <button key={item.label} type="button" onClick={() => createSymptom(item.type!)}>
+            <button
+              key={item.label}
+              type="button"
+              onClick={() => handleSymptomClick(item.type!)}
+              disabled={savingType === item.type}
+            >
               {content}
             </button>
           );
         })}
       </div>
+      <input
+        ref={vomitPhotoInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="sr-only"
+        onChange={(event) => {
+          const photo = event.target.files?.[0] ?? null;
+          event.target.value = "";
+          if (photo) {
+            createSymptom("vomito", photo);
+          }
+        }}
+      />
       {message ? <p className="text-sm text-on-surface-variant">{message}</p> : null}
     </section>
   );

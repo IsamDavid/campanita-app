@@ -141,6 +141,7 @@ export interface Database {
           type: string;
           severity: string | null;
           notes: string | null;
+          photo_url: string | null;
           occurred_at: Timestamp;
           created_by: UUID | null;
           created_at: Timestamp;
@@ -152,6 +153,7 @@ export interface Database {
           type: string;
           severity?: string | null;
           notes?: string | null;
+          photo_url?: string | null;
           occurred_at: Timestamp;
           created_by?: UUID | null;
           created_at?: Timestamp;

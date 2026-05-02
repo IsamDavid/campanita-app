@@ -2,6 +2,7 @@ import { addDays, subDays } from "date-fns";
 
 import { formatLongDate, relativeFromNow } from "@/lib/dates";
 import type {
+  AlertItem,
   AppContext,
   DayCheckItem,
   FamilyActivityItem,
@@ -449,7 +450,7 @@ export const demoChecks: DayCheckItem[] = [
   }
 ];
 
-export const demoAlerts = [
+export const demoAlerts: AlertItem[] = [
   {
     id: "alert-1",
     tone: "urgent",

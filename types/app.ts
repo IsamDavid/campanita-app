@@ -46,6 +46,18 @@ export interface DayCheckItem {
   completedAt?: string | null;
 }
 
+export interface AlertItem {
+  id: string;
+  tone: "calm" | "urgent" | "soft";
+  title: string;
+  description: string;
+  recordType?: "symptom";
+  recordId?: string;
+  photoUrl?: string | null;
+  photoPath?: string | null;
+  canDelete?: boolean;
+}
+
 export interface FamilyActivityItem {
   id: string;
   title: string;

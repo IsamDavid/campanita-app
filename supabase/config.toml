@@ -244,6 +244,11 @@ public = false
 file_size_limit = "10MiB"
 allowed_mime_types = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"]
 
+[storage.buckets.symptom-photos]
+public = false
+file_size_limit = "10MiB"
+allowed_mime_types = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"]
+
 [storage.buckets.documents]
 public = false
 file_size_limit = "20MiB"

@@ -154,10 +154,14 @@ create table if not exists public.symptom_logs (
   type text not null,
   severity text,
   notes text,
+  photo_url text,
   occurred_at timestamptz not null,
   created_by uuid references auth.users (id) on delete set null,
   created_at timestamptz not null default timezone('utc', now())
 );
+
+alter table if exists public.symptom_logs
+add column if not exists photo_url text;
 
 create table if not exists public.meals (
   id uuid primary key default gen_random_uuid(),

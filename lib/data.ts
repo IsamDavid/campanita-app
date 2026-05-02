@@ -38,6 +38,7 @@ import type {
   MedicationCheck,
   Pet,
   StoolLog,
+  SymptomLog,
   Supply,
   Vaccine,
   VetVisit
@@ -50,6 +51,15 @@ async function getSignedAssetUrl(bucket: string, path: string | null | undefined
   const supabase = getSupabaseServiceClient();
   const { data } = await supabase.storage.from(bucket).createSignedUrl(path, 60 * 60 * 6);
   return data?.signedUrl ?? null;
+}
+
+function formatSymptomType(type: string) {
+  const labels: Record<string, string> = {
+    vomito: "Vómito",
+    comio_poco: "Comió poco"
+  };
+
+  return labels[type] ?? type.replaceAll("_", " ");
 }
 
 async function ensureMealChecks(context: AppContext) {
@@ -461,10 +471,27 @@ export async function getTodayDashboardData(context: AppContext) {
     })
   ].sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt));
 
+  const symptomAlerts = await Promise.all(
+    ((recentSymptomsRes.data ?? []) as SymptomLog[])
+      .filter((item) => isAfter(new Date(item.occurred_at), subDays(new Date(), 1)))
+      .map(async (item) => ({
+        id: `symptom-${item.id}`,
+        tone: item.severity === "alta" || item.type === "vomito" ? "urgent" as const : "soft" as const,
+        title: `Síntoma registrado: ${formatSymptomType(item.type)}`,
+        description: item.notes || `Registrado ${relativeFromNow(item.occurred_at)}`,
+        recordType: "symptom" as const,
+        recordId: item.id,
+        photoUrl: await getSignedAssetUrl(STORAGE_BUCKETS.symptomPhotos, item.photo_url),
+        photoPath: item.photo_url,
+        canDelete: true
+      }))
+  );
+
   const alerts = [
+    ...symptomAlerts,
     ...supplies.map((item) => ({
       id: item.id,
-      tone: item.status === "urgente" ? "urgent" : "soft",
+      tone: item.status === "urgente" ? "urgent" as const : "soft" as const,
       title:
         item.status === "urgente"
           ? `${item.name}: urge reponer`
@@ -502,7 +529,7 @@ export async function getTodayDashboardData(context: AppContext) {
     })),
     ...(recentSymptomsRes.data ?? []).map((item) => ({
       id: item.id,
-      title: `Síntoma: ${item.type}`,
+      title: `Síntoma: ${formatSymptomType(item.type)}`,
       subtitle: item.notes || "Registro rápido",
       created_at: item.created_at,
       relative_label: relativeFromNow(item.created_at),
