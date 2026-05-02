@@ -50,6 +50,18 @@ export function MedicationCard({
     setSaving(true);
     setError(null);
     const supabase = getSupabaseBrowserClient();
+    const { data: schedules, error: schedulesError } = await supabase
+      .from("medication_schedules")
+      .select("id")
+      .eq("medication_id", medication.id)
+      .eq("household_id", medication.household_id);
+
+    if (schedulesError) {
+      setSaving(false);
+      setError(schedulesError.message);
+      return;
+    }
+
     const { error: medicationError } = await supabase
       .from("medications")
       .update({ active: false })
@@ -73,6 +85,22 @@ export function MedicationCard({
     if (scheduleError) {
       setError(scheduleError.message);
       return;
+    }
+
+    const scheduleIds = (schedules ?? []).map((item) => item.id);
+    if (scheduleIds.length) {
+      const { error: remindersError } = await supabase
+        .from("reminders")
+        .update({ status: "cancelled" })
+        .eq("household_id", medication.household_id)
+        .eq("type", "medication")
+        .eq("status", "pending")
+        .in("related_id", scheduleIds);
+
+      if (remindersError) {
+        setError(remindersError.message);
+        return;
+      }
     }
 
     router.refresh();
