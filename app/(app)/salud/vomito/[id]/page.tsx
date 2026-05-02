@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { SymptomPhotoUpdater } from "@/components/campanita/SymptomPhotoUpdater";
 import { AppShell } from "@/components/layout/AppShell";
 import { Card } from "@/components/ui/card";
 import { requireAppContext } from "@/lib/auth";
@@ -33,6 +34,13 @@ export default async function VomitLogDetailPage({
             />
           </Card>
         ) : null}
+
+        <SymptomPhotoUpdater
+          context={context}
+          recordId={record.id}
+          recordType="vomito"
+          existingPhotoPath={record.photo_url}
+        />
 
         <Card className="space-y-3">
           <div>
