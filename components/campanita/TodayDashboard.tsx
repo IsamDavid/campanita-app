@@ -30,6 +30,7 @@ export function TodayDashboard({
 }) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [undoingId, setUndoingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const canManage = context.role === "owner" || context.role === "caregiver";
 
@@ -65,6 +66,52 @@ export function TodayDashboard({
     }
 
     setDeletingId(null);
+    router.refresh();
+  }
+
+  async function undoActivity(item: FamilyActivityItem) {
+    if (!item.undoType || !item.undoId || !canManage) return;
+    if (isDemoMode) {
+      setError("Modo exploracion: deshacer actividad esta desactivado.");
+      return;
+    }
+
+    const confirmed = window.confirm("¿Deshacer este registro y volverlo pendiente?");
+    if (!confirmed) return;
+
+    const undoKey = `${item.undoType}-${item.undoId}`;
+    const table = item.undoType === "meal" ? "meal_checks" : "medication_checks";
+    const payload =
+      item.undoType === "meal"
+        ? {
+            status: "pendiente",
+            intake: null,
+            completed_at: null,
+            completed_by: null
+          }
+        : {
+            status: "pendiente",
+            completed_at: null,
+            completed_by: null
+          };
+
+    setUndoingId(undoKey);
+    setError(null);
+
+    const supabase = getSupabaseBrowserClient();
+    const { error: undoError } = await supabase
+      .from(table)
+      .update(payload)
+      .eq("id", item.undoId)
+      .eq("household_id", context.household.id);
+
+    setUndoingId(null);
+
+    if (undoError) {
+      setError(undoError.message);
+      return;
+    }
+
     router.refresh();
   }
 
@@ -158,7 +205,7 @@ export function TodayDashboard({
         )}
       </section>
 
-      <FamilyActivity items={activity} />
+      <FamilyActivity items={activity} canManage={canManage} undoingId={undoingId} onUndo={undoActivity} />
     </div>
   );
 }

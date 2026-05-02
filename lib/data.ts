@@ -671,7 +671,9 @@ export async function getTodayDashboardData(context: AppContext) {
         subtitle: meals.get(item.meal_id)?.name ?? "Comida",
         created_at: item.completed_at!,
         relative_label: relativeFromNow(item.completed_at!),
-        icon: "meal" as const
+        icon: "meal" as const,
+        undoType: "meal" as const,
+        undoId: item.id
       })),
     ...medicationChecks
       .filter((item) => item.completed_at)
@@ -681,7 +683,9 @@ export async function getTodayDashboardData(context: AppContext) {
         subtitle: medications.get(item.medication_id)?.name ?? "Medicina",
         created_at: item.completed_at!,
         relative_label: relativeFromNow(item.completed_at!),
-        icon: "medication" as const
+        icon: "medication" as const,
+        undoType: "medication" as const,
+        undoId: item.id
       }))
   ]
     .sort((a, b) => b.created_at.localeCompare(a.created_at))

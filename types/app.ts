@@ -66,4 +66,6 @@ export interface FamilyActivityItem {
   created_at: string;
   relative_label: string;
   icon: "medication" | "meal" | "stool" | "symptom" | "vet";
+  undoType?: "meal" | "medication";
+  undoId?: string;
 }
