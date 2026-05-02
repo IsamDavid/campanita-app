@@ -4,6 +4,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "@/app/globals.css";
 
 import { PwaSetup } from "@/components/layout/PwaSetup";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "Campanita",
