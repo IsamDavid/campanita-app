@@ -346,86 +346,82 @@ export async function getTodayDashboardData(context: AppContext) {
   if (isDemoMode) {
     return getDemoTodayDashboardData();
   }
+  const emptyDashboardData = {
+    checks: [],
+    alerts: [],
+    activity: [],
+    todayLabel: formatLongDate(new Date()),
+    supplies: [],
+    vaccines: []
+  };
+
   if (!hasSupabaseEnv) {
-    return {
-      checks: [],
-      alerts: [],
-      activity: [],
-      todayLabel: formatLongDate(new Date()),
-      supplies: [],
-      vaccines: []
-    };
+    return emptyDashboardData;
   }
   if (!context.pet) {
-    return {
-      checks: [],
-      alerts: [],
-      activity: [],
-      todayLabel: formatLongDate(new Date()),
-      supplies: [],
-      vaccines: []
-    };
+    return emptyDashboardData;
   }
 
-  await ensureTodayChecks(context);
+  try {
+    await ensureTodayChecks(context);
 
-  const supabase = await getSupabaseServerClient();
-  const from = startOfDay(new Date()).toISOString();
-  const to = endOfDay(new Date()).toISOString();
+    const supabase = await getSupabaseServerClient();
+    const from = startOfDay(new Date()).toISOString();
+    const to = endOfDay(new Date()).toISOString();
 
-  const [
-    mealChecksRes,
-    medicationChecksRes,
-    mealsRes,
-    medicationsRes,
-    supplies,
-    vaccines,
-    recentStoolsRes,
-    recentSymptomsRes,
-    recentVetRes
-  ] = await Promise.all([
-    supabase
-      .from("meal_checks")
-      .select("*")
-      .eq("household_id", context.household.id)
-      .eq("pet_id", context.pet.id)
-      .gte("scheduled_at", from)
-      .lte("scheduled_at", to)
-      .order("scheduled_at", { ascending: true }),
-    supabase
-      .from("medication_checks")
-      .select("*")
-      .eq("household_id", context.household.id)
-      .eq("pet_id", context.pet.id)
-      .gte("scheduled_at", from)
-      .lte("scheduled_at", to)
-      .order("scheduled_at", { ascending: true }),
-    supabase.from("meals").select("*").eq("household_id", context.household.id),
-    supabase.from("medications").select("*").eq("household_id", context.household.id),
-    getCachedAlertSupplies(context.household.id),
-    getCachedUpcomingVaccines(context.household.id),
-    supabase
-      .from("stool_logs")
-      .select("*")
-      .eq("household_id", context.household.id)
-      .eq("pet_id", context.pet.id)
-      .order("created_at", { ascending: false })
-      .limit(5),
-    supabase
-      .from("symptom_logs")
-      .select("*")
-      .eq("household_id", context.household.id)
-      .eq("pet_id", context.pet.id)
-      .order("created_at", { ascending: false })
-      .limit(5),
-    supabase
-      .from("vet_visits")
-      .select("*")
-      .eq("household_id", context.household.id)
-      .eq("pet_id", context.pet.id)
-      .order("created_at", { ascending: false })
-      .limit(5)
-  ]);
+    const [
+      mealChecksRes,
+      medicationChecksRes,
+      mealsRes,
+      medicationsRes,
+      supplies,
+      vaccines,
+      recentStoolsRes,
+      recentSymptomsRes,
+      recentVetRes
+    ] = await Promise.all([
+      supabase
+        .from("meal_checks")
+        .select("*")
+        .eq("household_id", context.household.id)
+        .eq("pet_id", context.pet.id)
+        .gte("scheduled_at", from)
+        .lte("scheduled_at", to)
+        .order("scheduled_at", { ascending: true }),
+      supabase
+        .from("medication_checks")
+        .select("*")
+        .eq("household_id", context.household.id)
+        .eq("pet_id", context.pet.id)
+        .gte("scheduled_at", from)
+        .lte("scheduled_at", to)
+        .order("scheduled_at", { ascending: true }),
+      supabase.from("meals").select("*").eq("household_id", context.household.id),
+      supabase.from("medications").select("*").eq("household_id", context.household.id),
+      getCachedAlertSupplies(context.household.id),
+      getCachedUpcomingVaccines(context.household.id),
+      supabase
+        .from("stool_logs")
+        .select("*")
+        .eq("household_id", context.household.id)
+        .eq("pet_id", context.pet.id)
+        .order("created_at", { ascending: false })
+        .limit(5),
+      supabase
+        .from("symptom_logs")
+        .select("*")
+        .eq("household_id", context.household.id)
+        .eq("pet_id", context.pet.id)
+        .order("created_at", { ascending: false })
+        .limit(5),
+      supabase
+        .from("vet_visits")
+        .select("*")
+        .eq("household_id", context.household.id)
+        .eq("pet_id", context.pet.id)
+        .order("created_at", { ascending: false })
+        .limit(5)
+    ]);
 
   const mealChecks = (mealChecksRes.data ?? []) as MealCheck[];
   const medicationChecks = (medicationChecksRes.data ?? []) as MedicationCheck[];
@@ -567,14 +563,18 @@ export async function getTodayDashboardData(context: AppContext) {
     .sort((a, b) => b.created_at.localeCompare(a.created_at))
     .slice(0, 8);
 
-  return {
-    checks,
-    alerts,
-    activity,
-    todayLabel: formatLongDate(new Date()),
-    supplies,
-    vaccines
-  };
+    return {
+      checks,
+      alerts,
+      activity,
+      todayLabel: formatLongDate(new Date()),
+      supplies,
+      vaccines
+    };
+  } catch (error) {
+    console.error("Failed to load today dashboard", error);
+    return emptyDashboardData;
+  }
 }
 
 export async function getMealsPageData(context: AppContext) {

@@ -159,13 +159,19 @@ npm run supabase:types
 
 ## Cron de recordatorios
 
-En Vercel, `vercel.json` configura una llamada automática cada 5 minutos a:
+El endpoint de recordatorios es:
 
 ```txt
 /api/cron/reminders
 ```
 
-Ese endpoint procesa recordatorios pendientes y envía web push a las suscripciones del household. Para que funcione en producción necesitas las variables `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` y `SUPABASE_SERVICE_ROLE_KEY`.
+Ese endpoint procesa recordatorios pendientes y envía web push a las suscripciones del household. Para que funcione en producción necesitas las variables `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `SUPABASE_SERVICE_ROLE_KEY` y `CRON_SECRET`.
+
+En Vercel Hobby no se puede usar cron cada 5 minutos. Configura un monitor externo, por ejemplo `cron-job.org`, para llamar cada 5 minutos:
+
+```txt
+https://TU_DOMINIO/api/cron/reminders?secret=TU_CRON_SECRET
+```
 
 ## Instalación local
 
