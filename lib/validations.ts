@@ -10,6 +10,18 @@ export const stoolLogSchema = z.object({
   occurred_at: z.string().min(1, "La fecha es obligatoria")
 });
 
+export const vomitLogSchema = z.object({
+  notes: z.string().max(600).optional().or(z.literal("")),
+  occurred_at: z.string().min(1, "La fecha es obligatoria")
+});
+
+export const symptomLogSchema = z.object({
+  type: z.string().min(2, "Selecciona el tipo de registro"),
+  severity: z.enum(["baja", "media", "alta"]),
+  notes: z.string().max(600).optional().or(z.literal("")),
+  occurred_at: z.string().min(1, "La fecha es obligatoria")
+});
+
 export const mealSchema = z.object({
   name: z.string().min(2, "Escribe un nombre"),
   food_type: z.string().min(2, "Describe el tipo de comida"),

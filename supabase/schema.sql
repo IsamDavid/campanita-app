@@ -199,6 +199,7 @@ create table if not exists public.meal_checks (
   scheduled_at timestamptz not null,
   completed_at timestamptz,
   status text not null default 'pendiente' check (status in ('pendiente', 'dada', 'saltada')),
+  intake text check (intake is null or intake in ('bien', 'poco', 'nada')),
   completed_by uuid references auth.users (id) on delete set null,
   notes text,
   created_at timestamptz not null default timezone('utc', now()),

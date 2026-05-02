@@ -221,6 +221,7 @@ export function MealPlanner({
                     status: check.status,
                     checkId: check.id,
                     notes: check.notes,
+                    intake: check.intake,
                     completedAt: check.completed_at ?? undefined,
                     completedByName: check.completed_by_name
                   }}

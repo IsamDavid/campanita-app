@@ -1,6 +1,7 @@
 export type UserRole = "owner" | "caregiver" | "viewer";
 export type StoolConsistency = "liquida" | "blanda" | "normal" | "dura";
 export type CheckStatus = "pendiente" | "dada" | "saltada";
+export type MealIntake = "bien" | "poco" | "nada";
 export type SupplyStatus = "suficiente" | "pronto_se_acaba" | "urgente";
 export type ReminderType = "meal" | "medication" | "supply" | "vet" | "custom";
 
@@ -226,6 +227,7 @@ export interface Database {
           scheduled_at: Timestamp;
           completed_at: Timestamp | null;
           status: CheckStatus;
+          intake: MealIntake | null;
           completed_by: UUID | null;
           notes: string | null;
           created_at: Timestamp;
@@ -240,6 +242,7 @@ export interface Database {
           scheduled_at: Timestamp;
           completed_at?: Timestamp | null;
           status?: CheckStatus;
+          intake?: MealIntake | null;
           completed_by?: UUID | null;
           notes?: string | null;
           created_at?: Timestamp;

@@ -45,6 +45,7 @@ export function MealCard({
             Programada a las {formatClock(check.scheduled_at)}
           </p>
           {check.completed_by_name ? <p className="mt-1">Marcada por {check.completed_by_name}</p> : null}
+          {check.intake ? <p className="mt-1">Comio {check.intake}</p> : null}
         </div>
       ) : null}
       {meal.preparation ? (

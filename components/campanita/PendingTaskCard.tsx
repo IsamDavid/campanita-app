@@ -23,11 +23,11 @@ export function PendingTaskCard({
   role: UserRole;
 }) {
   const router = useRouter();
-  const [busy, setBusy] = useState<"dada" | "saltada" | "nota" | null>(null);
+  const [busy, setBusy] = useState<"dada" | "saltada" | "nota" | "bien" | "poco" | "nada" | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const editable = role === "owner" || role === "caregiver";
 
-  async function updateCheck(action: "dada" | "saltada" | "nota") {
+  async function updateCheck(action: "dada" | "saltada" | "nota" | "bien" | "poco" | "nada") {
     if (isDemoMode) {
       setMessage("Modo exploracion: esta accion esta desactivada.");
       return;
@@ -52,9 +52,9 @@ export function PendingTaskCard({
       return;
     }
 
-    if (current.status === "dada" && action === "dada") {
+    if (current.status === "dada" && (action === "dada" || action === "bien" || action === "poco")) {
       setBusy(null);
-      setMessage("Ese pendiente ya fue marcado como dado.");
+      setMessage("Ese pendiente ya fue marcado.");
       return;
     }
 
@@ -63,11 +63,20 @@ export function PendingTaskCard({
         ? window.prompt("Agrega una nota para este pendiente", current.notes ?? "") ?? current.notes
         : current.notes;
 
+    const mealIntake = action === "bien" || action === "poco" || action === "nada" ? action : null;
+    const status =
+      mealIntake === "bien" || mealIntake === "poco"
+        ? "dada"
+        : mealIntake === "nada"
+          ? "saltada"
+          : action;
+
     const payload =
       action === "nota"
         ? { notes: note }
         : {
-            status: action,
+            status,
+            intake: item.type === "meal" ? mealIntake : undefined,
             completed_at: new Date().toISOString(),
             completed_by: userId,
             notes: note
@@ -127,37 +136,69 @@ export function PendingTaskCard({
         </div>
       ) : null}
 
-      <div className="grid grid-cols-3 gap-2">
-        <Button
-          type="button"
-          className="px-3 text-xs"
-          disabled={busy !== null}
-          onClick={() => updateCheck("dada")}
-        >
-          <CheckCircle2 className="h-4 w-4" />
-          Ya se dio
-        </Button>
-        <Button
-          type="button"
-          variant="secondary"
-          className="px-3 text-xs"
-          disabled={busy !== null}
-          onClick={() => updateCheck("saltada")}
-        >
-          <SkipForward className="h-4 w-4" />
-          Saltar
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          className="px-3 text-xs"
-          disabled={busy !== null}
-          onClick={() => updateCheck("nota")}
-        >
-          <MessageSquarePlus className="h-4 w-4" />
-          Nota
-        </Button>
-      </div>
+      {item.type === "meal" ? (
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <Button type="button" className="px-3 text-xs" disabled={busy !== null} onClick={() => updateCheck("bien")}>
+            <CheckCircle2 className="h-4 w-4" />
+            Bien
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            className="px-3 text-xs"
+            disabled={busy !== null}
+            onClick={() => updateCheck("poco")}
+          >
+            Poco
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            className="px-3 text-xs"
+            disabled={busy !== null}
+            onClick={() => updateCheck("nada")}
+          >
+            Nada
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="px-3 text-xs"
+            disabled={busy !== null}
+            onClick={() => updateCheck("nota")}
+          >
+            <MessageSquarePlus className="h-4 w-4" />
+            Nota
+          </Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-2">
+          <Button type="button" className="px-3 text-xs" disabled={busy !== null} onClick={() => updateCheck("dada")}>
+            <CheckCircle2 className="h-4 w-4" />
+            Ya se dio
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            className="px-3 text-xs"
+            disabled={busy !== null}
+            onClick={() => updateCheck("saltada")}
+          >
+            <SkipForward className="h-4 w-4" />
+            Saltar
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="px-3 text-xs"
+            disabled={busy !== null}
+            onClick={() => updateCheck("nota")}
+          >
+            <MessageSquarePlus className="h-4 w-4" />
+            Nota
+          </Button>
+        </div>
+      )}
 
       {message ? <p className="text-xs text-on-surface-variant">{message}</p> : null}
     </Card>

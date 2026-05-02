@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Camera, CircleAlert, Stethoscope, UtensilsCrossed } from "lucide-react";
+import { Camera, CircleAlert, HeartPulse, Stethoscope } from "lucide-react";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -25,10 +25,10 @@ const quickActionItems = [
     type: "vomito"
   },
   {
-    label: "Comió poco",
-    icon: UtensilsCrossed,
-    kind: "symptom" as const,
-    type: "comio_poco"
+    href: "/salud/otros/nuevo",
+    label: "Otro registro",
+    icon: HeartPulse,
+    kind: "link" as const
   },
   {
     label: "Consulta vet",

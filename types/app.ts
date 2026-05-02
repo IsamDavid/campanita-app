@@ -42,6 +42,7 @@ export interface DayCheckItem {
   status: "pendiente" | "dada" | "saltada";
   checkId: string;
   notes: string | null;
+  intake?: "bien" | "poco" | "nada" | null;
   completedByName?: string | null;
   completedAt?: string | null;
 }
