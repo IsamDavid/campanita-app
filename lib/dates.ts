@@ -76,6 +76,14 @@ export function fromAppLocalDateTime(dateKey: string, time: string) {
   return new Date(utcGuess.getTime() - offset);
 }
 
+export function startOfAppDayIso(date: Date = new Date()) {
+  return fromAppLocalDateTime(getAppDateKey(date), "00:00:00").toISOString();
+}
+
+export function endOfAppDayIso(date: Date = new Date()) {
+  return fromAppLocalDateTime(getAppDateKey(date), "23:59:59").toISOString();
+}
+
 export function formatLongDate(date: string | Date) {
   return new Intl.DateTimeFormat(locale, {
     weekday: "long",
@@ -120,7 +128,16 @@ export function isToday(date: string | Date) {
 }
 
 export function toLocalDatetimeValue(date: Date = new Date()) {
-  const copy = new Date(date);
-  copy.setMinutes(copy.getMinutes() - copy.getTimezoneOffset());
-  return copy.toISOString().slice(0, 16);
+  const parts = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: appTimeZone
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+
+  return `${values.year}-${values.month}-${values.day}T${values.hour}:${values.minute}`;
 }

@@ -4,6 +4,7 @@ import { SummaryActions } from "@/components/campanita/SummaryActions";
 import { VetSummary } from "@/components/campanita/VetSummary";
 import { requireAppContext } from "@/lib/auth";
 import { getSummaryData } from "@/lib/data";
+import { getAppDateKey } from "@/lib/dates";
 
 function normalizeDate(search: string | string[] | undefined, fallback: string) {
   if (Array.isArray(search)) return search[0] ?? fallback;
@@ -17,8 +18,8 @@ export default async function SummaryPage({
 }) {
   const context = await requireAppContext();
   const params = await searchParams;
-  const from = normalizeDate(params.from, new Date(Date.now() - 1000 * 60 * 60 * 24 * 14).toISOString().slice(0, 10));
-  const to = normalizeDate(params.to, new Date().toISOString().slice(0, 10));
+  const from = normalizeDate(params.from, getAppDateKey(new Date(Date.now() - 1000 * 60 * 60 * 24 * 14)));
+  const to = normalizeDate(params.to, getAppDateKey(new Date()));
   const days = Math.max(1, Math.ceil((new Date(to).getTime() - new Date(from).getTime()) / 86400000));
   const summary = await getSummaryData(context, days);
 

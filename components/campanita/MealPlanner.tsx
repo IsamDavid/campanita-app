@@ -13,6 +13,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { formatClock } from "@/lib/dates";
 import { isDemoMode } from "@/lib/demo";
 import { mealSchema } from "@/lib/validations";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
@@ -216,7 +217,7 @@ export function MealPlanner({
                     id: check.id,
                     type: "meal",
                     title: meal.name,
-                    subtitle: [check.scheduled_at.slice(11, 16), meal.quantity].filter(Boolean).join(" • "),
+                    subtitle: [formatClock(check.scheduled_at), meal.quantity].filter(Boolean).join(" • "),
                     scheduledAt: check.scheduled_at,
                     status: check.status,
                     checkId: check.id,

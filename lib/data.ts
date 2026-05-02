@@ -1,14 +1,20 @@
 import {
   addDays,
-  endOfDay,
-  format,
   isAfter,
-  startOfDay,
   subDays
 } from "date-fns";
 import { unstable_cache } from "next/cache";
 
-import { formatClock, formatLongDate, relativeFromNow } from "@/lib/dates";
+import {
+  endOfAppDayIso,
+  formatClock,
+  formatLongDate,
+  fromAppLocalDateTime,
+  getAppDateKey,
+  getAppWeekday,
+  relativeFromNow,
+  startOfAppDayIso
+} from "@/lib/dates";
 import {
   demoMembers,
   demoStoolLogs,
@@ -75,8 +81,8 @@ async function ensureMealChecks(context: AppContext) {
 
   const supabase = getSupabaseServiceClient();
   const today = new Date();
-  const weekday = today.getDay();
-  const dateStamp = format(today, "yyyy-MM-dd");
+  const weekday = getAppWeekday(today);
+  const dateStamp = getAppDateKey(today);
 
   const { data: schedules } = await supabase
     .from("meal_schedules")
@@ -87,12 +93,12 @@ async function ensureMealChecks(context: AppContext) {
     .contains("days_of_week", [weekday]);
 
   for (const schedule of schedules ?? []) {
-    const scheduledAt = new Date(`${dateStamp}T${schedule.time_of_day}`);
+    const scheduledAt = fromAppLocalDateTime(dateStamp, schedule.time_of_day).toISOString();
     const { data: existing } = await supabase
       .from("meal_checks")
       .select("id")
       .eq("schedule_id", schedule.id)
-      .eq("scheduled_at", scheduledAt.toISOString())
+      .eq("scheduled_at", scheduledAt)
       .maybeSingle();
 
     if (!existing) {
@@ -107,7 +113,7 @@ async function ensureMealChecks(context: AppContext) {
         pet_id: context.pet.id,
         meal_id: schedule.meal_id,
         schedule_id: schedule.id,
-        scheduled_at: scheduledAt.toISOString(),
+        scheduled_at: scheduledAt,
         status: "pendiente"
       });
 
@@ -118,7 +124,7 @@ async function ensureMealChecks(context: AppContext) {
         relatedId: schedule.id,
         title: `Comida de ${context.pet.name}`,
         body: meal ? `${meal.name} programada para ${formatClock(scheduledAt)}` : "Tienes una comida pendiente.",
-        scheduledAt: scheduledAt.toISOString(),
+        scheduledAt,
         reminderMinutesBefore: schedule.reminder_minutes_before,
         createdBy: context.userId
       });
@@ -132,8 +138,8 @@ async function ensureMedicationChecks(context: AppContext) {
 
   const supabase = getSupabaseServiceClient();
   const today = new Date();
-  const weekday = today.getDay();
-  const dateStamp = format(today, "yyyy-MM-dd");
+  const weekday = getAppWeekday(today);
+  const dateStamp = getAppDateKey(today);
 
   const { data: schedules } = await supabase
     .from("medication_schedules")
@@ -144,12 +150,12 @@ async function ensureMedicationChecks(context: AppContext) {
     .contains("days_of_week", [weekday]);
 
   for (const schedule of schedules ?? []) {
-    const scheduledAt = new Date(`${dateStamp}T${schedule.time_of_day}`);
+    const scheduledAt = fromAppLocalDateTime(dateStamp, schedule.time_of_day).toISOString();
     const { data: existing } = await supabase
       .from("medication_checks")
       .select("id")
       .eq("schedule_id", schedule.id)
-      .eq("scheduled_at", scheduledAt.toISOString())
+      .eq("scheduled_at", scheduledAt)
       .maybeSingle();
 
     if (!existing) {
@@ -164,7 +170,7 @@ async function ensureMedicationChecks(context: AppContext) {
         pet_id: context.pet.id,
         medication_id: schedule.medication_id,
         schedule_id: schedule.id,
-        scheduled_at: scheduledAt.toISOString(),
+        scheduled_at: scheduledAt,
         status: "pendiente"
       });
 
@@ -177,7 +183,7 @@ async function ensureMedicationChecks(context: AppContext) {
         body: medication
           ? `${medication.name} programada para ${formatClock(scheduledAt)}`
           : "Tienes una medicina pendiente.",
-        scheduledAt: scheduledAt.toISOString(),
+        scheduledAt,
         reminderMinutesBefore: schedule.reminder_minutes_before,
         createdBy: context.userId
       });
@@ -256,7 +262,7 @@ const getCachedUpcomingVaccines = unstable_cache(
       .from("vaccines")
       .select("*")
       .eq("household_id", householdId)
-      .gte("next_due_date", format(new Date(), "yyyy-MM-dd"))
+      .gte("next_due_date", getAppDateKey(new Date()))
       .order("next_due_date", { ascending: true })
       .limit(5);
 
@@ -483,8 +489,8 @@ export async function getTodayDashboardData(context: AppContext) {
   await ensureTodayChecks(context);
 
   const supabase = await getSupabaseServerClient();
-  const from = startOfDay(new Date()).toISOString();
-  const to = endOfDay(new Date()).toISOString();
+  const from = startOfAppDayIso(new Date());
+  const to = endOfAppDayIso(new Date());
 
   const [
     mealChecksRes,
@@ -697,8 +703,8 @@ export async function getMealsPageData(context: AppContext) {
   if (!context.pet) return { meals: [], schedules: [], checks: [] };
   await ensureMealChecks(context);
   const supabase = await getSupabaseServerClient();
-  const from = startOfDay(new Date()).toISOString();
-  const to = endOfDay(new Date()).toISOString();
+  const from = startOfAppDayIso(new Date());
+  const to = endOfAppDayIso(new Date());
   const [mealsRes, schedulesRes, checksRes] = await Promise.all([
     supabase
       .from("meals")
@@ -742,8 +748,8 @@ export async function getMedicationsPageData(context: AppContext) {
   if (!context.pet) return { medications: [], schedules: [], checks: [] };
   await ensureMedicationChecks(context);
   const supabase = await getSupabaseServerClient();
-  const from = startOfDay(new Date()).toISOString();
-  const to = endOfDay(new Date()).toISOString();
+  const from = startOfAppDayIso(new Date());
+  const to = endOfAppDayIso(new Date());
   const [medicationsRes, schedulesRes, checksRes] = await Promise.all([
     supabase
       .from("medications")
