@@ -369,7 +369,7 @@ export async function getHouseholdMembers(householdId: string) {
   return getCachedHouseholdMembers(householdId);
 }
 
-export async function getStoolLogs(context: AppContext) {
+export async function getStoolLogs(context: AppContext, limit = 30) {
   if (isDemoMode) return demoStoolLogs;
   if (!hasSupabaseEnv) return [];
   if (!context.pet) return [];
@@ -381,7 +381,7 @@ export async function getStoolLogs(context: AppContext) {
     .eq("household_id", context.household.id)
     .eq("pet_id", context.pet.id)
     .order("occurred_at", { ascending: false })
-    .limit(30);
+    .limit(limit);
 
   const profileMap = await getProfileMap((data ?? []).map((item) => item.created_by).filter(Boolean) as string[]);
 
@@ -425,7 +425,7 @@ export async function getStoolLogById(context: AppContext, id: string) {
   };
 }
 
-export async function getVomitLogs(context: AppContext) {
+export async function getVomitLogs(context: AppContext, limit = 30) {
   if (isDemoMode) return [];
   if (!hasSupabaseEnv) return [];
   if (!context.pet) return [];
@@ -438,7 +438,7 @@ export async function getVomitLogs(context: AppContext) {
     .eq("pet_id", context.pet.id)
     .eq("type", "vomito")
     .order("occurred_at", { ascending: false })
-    .limit(30);
+    .limit(limit);
 
   const profileMap = await getProfileMap((data ?? []).map((item) => item.created_by).filter(Boolean) as string[]);
 
@@ -477,7 +477,7 @@ export async function getVomitLogById(context: AppContext, id: string) {
   };
 }
 
-export async function getOtherSymptomLogs(context: AppContext) {
+export async function getOtherSymptomLogs(context: AppContext, limit = 30) {
   if (isDemoMode) return [];
   if (!hasSupabaseEnv) return [];
   if (!context.pet) return [];
@@ -490,7 +490,7 @@ export async function getOtherSymptomLogs(context: AppContext) {
     .eq("pet_id", context.pet.id)
     .neq("type", "vomito")
     .order("occurred_at", { ascending: false })
-    .limit(30);
+    .limit(limit);
 
   const profileMap = await getProfileMap((data ?? []).map((item) => item.created_by).filter(Boolean) as string[]);
 

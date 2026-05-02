@@ -9,13 +9,32 @@ import { requireAppContext } from "@/lib/auth";
 import { formatDateTime } from "@/lib/dates";
 import { getOtherSymptomLogs, getStoolLogs, getVomitLogs } from "@/lib/data";
 
-export default async function HealthPage() {
+const previewLimit = 5;
+const expandedLimit = 30;
+
+function sectionLimit(section: string, expandedSection?: string) {
+  return expandedSection === section ? expandedLimit : previewLimit + 1;
+}
+
+export default async function HealthPage({
+  searchParams
+}: {
+  searchParams?: Promise<{ mostrar?: string }>;
+}) {
   const context = await requireAppContext();
+  const params = await searchParams;
+  const expandedSection = params?.mostrar;
   const [stools, vomits, otherSymptoms] = await Promise.all([
-    getStoolLogs(context),
-    getVomitLogs(context),
-    getOtherSymptomLogs(context)
+    getStoolLogs(context, sectionLimit("heces", expandedSection)),
+    getVomitLogs(context, sectionLimit("vomito", expandedSection)),
+    getOtherSymptomLogs(context, sectionLimit("otros", expandedSection))
   ]);
+  const visibleVomits = expandedSection === "vomito" ? vomits : vomits.slice(0, previewLimit);
+  const visibleOtherSymptoms = expandedSection === "otros" ? otherSymptoms : otherSymptoms.slice(0, previewLimit);
+  const visibleStools = expandedSection === "heces" ? stools : stools.slice(0, previewLimit);
+  const hasMoreVomits = expandedSection !== "vomito" && vomits.length > previewLimit;
+  const hasMoreOtherSymptoms = expandedSection !== "otros" && otherSymptoms.length > previewLimit;
+  const hasMoreStools = expandedSection !== "heces" && stools.length > previewLimit;
 
   return (
     <AppShell title="Salud" subtitle="Historial digestivo y síntomas" context={context}>
@@ -31,8 +50,8 @@ export default async function HealthPage() {
             </Link>
           </div>
 
-          {vomits.length ? (
-            vomits.map((item) => (
+          {visibleVomits.length ? (
+            visibleVomits.map((item) => (
               <Link key={item.id} href={`/salud/vomito/${item.id}`}>
                 <Card className="flex items-center gap-4">
                   <div className="h-20 w-20 overflow-hidden rounded-[1.25rem] bg-surface-container-low">
@@ -63,6 +82,13 @@ export default async function HealthPage() {
               description="Usa el botón de arriba para guardar foto, fecha y notas si llega a vomitar."
             />
           )}
+          {hasMoreVomits || expandedSection === "vomito" ? (
+            <Link href={expandedSection === "vomito" ? "/salud" : "/salud?mostrar=vomito"}>
+              <Button variant="outline" className="w-full">
+                {expandedSection === "vomito" ? "Ver menos" : "Ver más vómito"}
+              </Button>
+            </Link>
+          ) : null}
         </section>
 
         <section className="space-y-4">
@@ -76,8 +102,8 @@ export default async function HealthPage() {
             </Link>
           </div>
 
-          {otherSymptoms.length ? (
-            otherSymptoms.map((item) => (
+          {visibleOtherSymptoms.length ? (
+            visibleOtherSymptoms.map((item) => (
               <Link key={item.id} href={`/salud/otros/${item.id}`}>
                 <Card className="flex items-center gap-4">
                   <div className="h-20 w-20 overflow-hidden rounded-[1.25rem] bg-surface-container-low">
@@ -108,6 +134,13 @@ export default async function HealthPage() {
               description="Usa el botón de arriba para documentar lagaña, irritación u otros cambios."
             />
           )}
+          {hasMoreOtherSymptoms || expandedSection === "otros" ? (
+            <Link href={expandedSection === "otros" ? "/salud" : "/salud?mostrar=otros"}>
+              <Button variant="outline" className="w-full">
+                {expandedSection === "otros" ? "Ver menos" : "Ver más otros registros"}
+              </Button>
+            </Link>
+          ) : null}
         </section>
 
         <section className="space-y-4">
@@ -121,8 +154,8 @@ export default async function HealthPage() {
             </Link>
           </div>
 
-          {stools.length ? (
-            stools.map((item) => {
+          {visibleStools.length ? (
+            visibleStools.map((item) => {
               const imageSrc = item.thumbnail_signed_url ?? item.photo_signed_url ?? undefined;
 
               return (
@@ -157,6 +190,13 @@ export default async function HealthPage() {
               description="Usa el botón de arriba para guardar la primera foto de heces y empezar el historial."
             />
           )}
+          {hasMoreStools || expandedSection === "heces" ? (
+            <Link href={expandedSection === "heces" ? "/salud" : "/salud?mostrar=heces"}>
+              <Button variant="outline" className="w-full">
+                {expandedSection === "heces" ? "Ver menos" : "Ver más heces"}
+              </Button>
+            </Link>
+          ) : null}
         </section>
       </div>
     </AppShell>
