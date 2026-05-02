@@ -5,6 +5,7 @@ import {
   CalendarDays,
   ChevronRight,
   FileText,
+  Pill,
   Settings2,
   Stethoscope,
   Users
@@ -26,6 +27,12 @@ const sections = [
     title: "Insumos",
     description: "Inventario, compras y alertas de reposición.",
     icon: Boxes
+  },
+  {
+    href: "/medicinas",
+    title: "Medicinas",
+    description: "Tratamientos, dosis, horarios y recetas.",
+    icon: Pill
   },
   {
     href: "/agenda",

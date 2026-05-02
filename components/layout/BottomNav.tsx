@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 import {
   Boxes,
   CalendarDays,
+  ClipboardCheck,
   HeartPulse,
-  House,
-  Pill
+  House
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -16,7 +16,7 @@ const navItems = [
   { href: "/hoy", label: "Hoy", icon: CalendarDays },
   { href: "/salud", label: "Salud", icon: HeartPulse },
   { href: "/comidas", label: "Comidas", icon: House },
-  { href: "/medicinas", label: "Medicinas", icon: Pill },
+  { href: "/agenda", label: "Agenda", icon: ClipboardCheck },
   { href: "/insumos", label: "Insumos", icon: Boxes }
 ] as const;
 
