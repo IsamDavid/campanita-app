@@ -192,7 +192,6 @@ export function StoolLogForm({ context }: { context: AppContext }) {
             <input
               className="hidden"
               accept="image/*"
-              capture="environment"
               type="file"
               onChange={(event) => setFile(event.target.files?.[0] ?? null)}
             />
