@@ -73,3 +73,33 @@ export async function createImageThumbnail(file: File, maxSize = 400) {
     type: "image/webp"
   });
 }
+
+export async function createOptimizedImage(file: File, maxSize = 1200) {
+  const image = await loadImageFromFile(file);
+  const scale = Math.min(1, maxSize / Math.max(image.naturalWidth, image.naturalHeight));
+  const width = Math.max(1, Math.round(image.naturalWidth * scale));
+  const height = Math.max(1, Math.round(image.naturalHeight * scale));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+
+  const context = canvas.getContext("2d");
+  if (!context) {
+    throw new Error("No se pudo preparar la imagen optimizada.");
+  }
+
+  context.drawImage(image, 0, 0, width, height);
+
+  const blob = await new Promise<Blob | null>((resolve) => {
+    canvas.toBlob(resolve, "image/webp", 0.86);
+  });
+
+  if (!blob) {
+    throw new Error("No se pudo crear la imagen optimizada.");
+  }
+
+  return new File([blob], `${file.name.replace(/\.[^.]+$/, "") || "foto"}-optimized.webp`, {
+    type: "image/webp"
+  });
+}

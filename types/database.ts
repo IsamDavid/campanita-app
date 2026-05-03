@@ -115,6 +115,7 @@ export interface Database {
           household_id: UUID;
           pet_id: UUID;
           photo_url: string | null;
+          optimized_photo_url: string | null;
           thumbnail_url: string | null;
           consistency: StoolConsistency;
           color: string | null;
@@ -132,6 +133,7 @@ export interface Database {
           household_id: UUID;
           pet_id: UUID;
           photo_url?: string | null;
+          optimized_photo_url?: string | null;
           thumbnail_url?: string | null;
           consistency: StoolConsistency;
           color?: string | null;

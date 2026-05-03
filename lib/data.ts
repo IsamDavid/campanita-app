@@ -420,7 +420,10 @@ export async function getStoolLogById(context: AppContext, id: string) {
 
   return {
     ...data,
-    photo_signed_url: await getSignedAssetUrl(STORAGE_BUCKETS.stoolPhotos, data.photo_url),
+    photo_signed_url: await getSignedAssetUrl(
+      STORAGE_BUCKETS.stoolPhotos,
+      data.optimized_photo_url ?? data.photo_url
+    ),
     created_by_name: data.created_by ? profileMap.get(data.created_by) ?? "Familia" : "Familia"
   };
 }

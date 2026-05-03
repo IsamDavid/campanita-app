@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toLocalDatetimeValue } from "@/lib/dates";
 import { isDemoMode } from "@/lib/demo";
-import { buildStoragePath, createImageThumbnail, STORAGE_BUCKETS } from "@/lib/storage";
+import { buildStoragePath, createImageThumbnail, createOptimizedImage, STORAGE_BUCKETS } from "@/lib/storage";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
 import { stoolLogSchema } from "@/lib/validations";
 import type { AppContext } from "@/types/app";
@@ -71,6 +71,7 @@ export function StoolLogForm({ context }: { context: AppContext }) {
     setError(null);
     const supabase = getSupabaseBrowserClient();
     let photoPath: string | null = null;
+    let optimizedPhotoPath: string | null = null;
     let thumbnailPath: string | null = null;
 
     if (file) {
@@ -92,6 +93,25 @@ export function StoolLogForm({ context }: { context: AppContext }) {
       }
 
       try {
+        const optimized = await createOptimizedImage(file);
+        optimizedPhotoPath = buildStoragePath({
+          householdId: context.household.id,
+          petId: context.pet.id,
+          category: "stool/optimized",
+          fileName: optimized.name
+        });
+
+        const optimizedUpload = await supabase.storage
+          .from(STORAGE_BUCKETS.stoolPhotos)
+          .upload(optimizedPhotoPath, optimized, {
+            contentType: optimized.type,
+            upsert: false
+          });
+
+        if (optimizedUpload.error) {
+          optimizedPhotoPath = null;
+        }
+
         const thumbnail = await createImageThumbnail(file);
         thumbnailPath = buildStoragePath({
           householdId: context.household.id,
@@ -121,6 +141,7 @@ export function StoolLogForm({ context }: { context: AppContext }) {
         household_id: context.household.id,
         pet_id: context.pet.id,
         photo_url: photoPath,
+        optimized_photo_url: optimizedPhotoPath,
         thumbnail_url: thumbnailPath,
         consistency,
         color,
