@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { SymptomLogEditor } from "@/components/campanita/SymptomLogEditor";
 import { SymptomPhotoUpdater } from "@/components/campanita/SymptomPhotoUpdater";
 import { AppShell } from "@/components/layout/AppShell";
 import { Card } from "@/components/ui/card";
@@ -53,6 +54,13 @@ export default async function VomitLogDetailPage({
           </div>
           <p className="text-xs text-on-surface-variant">Registrado por {record.created_by_name}</p>
         </Card>
+
+        <SymptomLogEditor
+          context={context}
+          recordId={record.id}
+          occurredAt={record.occurred_at}
+          notes={record.notes}
+        />
       </div>
     </AppShell>
   );
