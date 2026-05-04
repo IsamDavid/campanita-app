@@ -84,6 +84,14 @@ export function endOfAppDayIso(date: Date = new Date()) {
   return fromAppLocalDateTime(getAppDateKey(date), "23:59:59").toISOString();
 }
 
+export function startOfAppDateKeyIso(dateKey: string) {
+  return fromAppLocalDateTime(dateKey, "00:00:00").toISOString();
+}
+
+export function endOfAppDateKeyIso(dateKey: string) {
+  return fromAppLocalDateTime(dateKey, "23:59:59").toISOString();
+}
+
 export function formatLongDate(date: string | Date) {
   return new Intl.DateTimeFormat(locale, {
     weekday: "long",

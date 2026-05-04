@@ -9,12 +9,16 @@ import { unstable_cache } from "next/cache";
 import {
   endOfAppDayIso,
   formatClock,
+  formatDateTime,
   formatLongDate,
+  formatShortDate,
   fromAppLocalDateTime,
   getAppDateKey,
   getAppWeekday,
   relativeFromNow,
-  startOfAppDayIso
+  startOfAppDateKeyIso,
+  startOfAppDayIso,
+  endOfAppDateKeyIso
 } from "@/lib/dates";
 import { formatCareTaskType } from "@/lib/care";
 import {
@@ -1049,39 +1053,64 @@ export async function getFamilyPageData(context: AppContext) {
   };
 }
 
-export async function getSummaryData(context: AppContext, fromDaysAgo = 14) {
+export async function getSummaryData(context: AppContext, range?: { from: string; to: string }) {
+  const fromDate = range?.from ?? getAppDateKey(subDays(new Date(), 14));
+  const toDate = range?.to ?? getAppDateKey(new Date());
+  const from = startOfAppDateKeyIso(fromDate);
+  const to = endOfAppDateKeyIso(toDate);
+
   if (isDemoMode) {
-    return getDemoSummaryData();
+    return {
+      ...getDemoSummaryData(),
+      period: { from: fromDate, to: toDate, fromIso: from, toIso: to }
+    };
   }
   if (!hasSupabaseEnv) {
     return {
+      period: { from: fromDate, to: toDate, fromIso: from, toIso: to },
       symptoms: [] as any[],
       stools: [] as Array<StoolLog & { photo_signed_url?: string | null; thumbnail_signed_url?: string | null }>,
       meals: [] as Meal[],
       mealChecks: [] as any[],
       medications: [] as Medication[],
       medicationChecks: [] as any[],
+      careTasks: [] as CareTask[],
+      careChecks: [] as any[],
       vetVisits: [] as VetVisit[],
       vaccines: [] as Vaccine[]
     };
   }
   if (!context.pet) {
     return {
+      period: { from: fromDate, to: toDate, fromIso: from, toIso: to },
       symptoms: [] as any[],
       stools: [] as Array<StoolLog & { photo_signed_url?: string | null; thumbnail_signed_url?: string | null }>,
       meals: [] as Meal[],
       mealChecks: [] as any[],
       medications: [] as Medication[],
       medicationChecks: [] as any[],
+      careTasks: [] as CareTask[],
+      careChecks: [] as any[],
       vetVisits: [] as VetVisit[],
       vaccines: [] as Vaccine[]
     };
   }
 
   const supabase = await getSupabaseServerClient();
-  const from = subDays(new Date(), fromDaysAgo).toISOString();
 
-  const [symptomsRes, stoolsRes, mealsRes, mealChecksRes, medsRes, medChecksRes, visitsRes, vaccinesRes] =
+  const [
+    symptomsRes,
+    stoolsRes,
+    mealsRes,
+    mealChecksRes,
+    medsRes,
+    medChecksRes,
+    careTasksRes,
+    careChecksRes,
+    visitsRes,
+    vaccinesAppliedRes,
+    vaccinesDueRes
+  ] =
     await Promise.all([
       supabase
         .from("symptom_logs")
@@ -1089,6 +1118,7 @@ export async function getSummaryData(context: AppContext, fromDaysAgo = 14) {
         .eq("household_id", context.household.id)
         .eq("pet_id", context.pet.id)
         .gte("occurred_at", from)
+        .lte("occurred_at", to)
         .order("occurred_at", { ascending: false }),
       supabase
         .from("stool_logs")
@@ -1096,6 +1126,7 @@ export async function getSummaryData(context: AppContext, fromDaysAgo = 14) {
         .eq("household_id", context.household.id)
         .eq("pet_id", context.pet.id)
         .gte("occurred_at", from)
+        .lte("occurred_at", to)
         .order("occurred_at", { ascending: false }),
       supabase.from("meals").select("*").eq("household_id", context.household.id).eq("pet_id", context.pet.id),
       supabase
@@ -1104,6 +1135,7 @@ export async function getSummaryData(context: AppContext, fromDaysAgo = 14) {
         .eq("household_id", context.household.id)
         .eq("pet_id", context.pet.id)
         .gte("scheduled_at", from)
+        .lte("scheduled_at", to)
         .order("scheduled_at", { ascending: false }),
       supabase
         .from("medications")
@@ -1117,19 +1149,46 @@ export async function getSummaryData(context: AppContext, fromDaysAgo = 14) {
         .eq("household_id", context.household.id)
         .eq("pet_id", context.pet.id)
         .gte("scheduled_at", from)
+        .lte("scheduled_at", to)
+        .order("scheduled_at", { ascending: false }),
+      supabase
+        .from("care_tasks")
+        .select("*")
+        .eq("household_id", context.household.id)
+        .eq("pet_id", context.pet.id)
+        .order("active", { ascending: false })
+        .order("time_of_day", { ascending: true }),
+      supabase
+        .from("care_task_checks")
+        .select("*")
+        .eq("household_id", context.household.id)
+        .eq("pet_id", context.pet.id)
+        .gte("scheduled_at", from)
+        .lte("scheduled_at", to)
         .order("scheduled_at", { ascending: false }),
       supabase
         .from("vet_visits")
         .select("*")
         .eq("household_id", context.household.id)
         .eq("pet_id", context.pet.id)
-        .gte("created_at", from)
+        .gte("visit_date", fromDate)
+        .lte("visit_date", toDate)
         .order("visit_date", { ascending: false }),
       supabase
         .from("vaccines")
         .select("*")
         .eq("household_id", context.household.id)
         .eq("pet_id", context.pet.id)
+        .gte("applied_at", fromDate)
+        .lte("applied_at", toDate)
+        .order("applied_at", { ascending: false }),
+      supabase
+        .from("vaccines")
+        .select("*")
+        .eq("household_id", context.household.id)
+        .eq("pet_id", context.pet.id)
+        .gte("next_due_date", fromDate)
+        .lte("next_due_date", toDate)
         .order("applied_at", { ascending: false })
     ]);
 
@@ -1144,15 +1203,31 @@ export async function getSummaryData(context: AppContext, fromDaysAgo = 14) {
     }))
   );
 
+  const vaccinesById = new Map<string, Vaccine>();
+  for (const vaccine of [...(vaccinesAppliedRes.data ?? []), ...(vaccinesDueRes.data ?? [])] as Vaccine[]) {
+    vaccinesById.set(vaccine.id, vaccine);
+  }
+
   return {
-    symptoms: symptomsRes.data ?? [],
+    period: { from: fromDate, to: toDate, fromIso: from, toIso: to },
+    symptoms: ((symptomsRes.data ?? []) as SymptomLog[]).map((item) => ({
+      ...item,
+      type_label: formatSymptomType(item.type),
+      occurred_label: formatDateTime(item.occurred_at)
+    })),
     stools,
     meals: mealsRes.data ?? [],
     mealChecks: mealChecksRes.data ?? [],
     medications: medsRes.data ?? [],
     medicationChecks: medChecksRes.data ?? [],
+    careTasks: careTasksRes.data ?? [],
+    careChecks: careChecksRes.data ?? [],
     vetVisits: visitsRes.data ?? [],
-    vaccines: vaccinesRes.data ?? []
+    vaccines: Array.from(vaccinesById.values()),
+    labels: {
+      period: `${formatShortDate(fromDate)} - ${formatShortDate(toDate)}`,
+      generatedAt: formatDateTime(new Date())
+    }
   };
 }
 
