@@ -48,6 +48,7 @@ import type {
   HouseholdMemberWithProfile,
   Meal,
   MealCheck,
+  MealSchedule,
   Medication,
   MedicationCheck,
   Pet,
@@ -887,14 +888,29 @@ export async function getMealsPageData(context: AppContext) {
       .order("scheduled_at", { ascending: true })
   ]);
 
+  const meals = (mealsRes.data ?? []) as Meal[];
+  const schedules = (schedulesRes.data ?? []) as MealSchedule[];
+  const mealsById = new Map(meals.map((item) => [item.id, item]));
+  const schedulesByMealId = new Map(schedules.map((item) => [item.meal_id, item]));
+  const dateStamp = getAppDateKey(new Date());
+  const weekday = getAppWeekday(new Date());
+  const visibleChecks = ((checksRes.data ?? []) as MealCheck[]).filter((check) => {
+    const meal = mealsById.get(check.meal_id);
+    const schedule = schedulesByMealId.get(check.meal_id);
+    if (!meal?.active || !schedule?.active || !schedule.days_of_week.includes(weekday)) return false;
+
+    const expectedAt = fromAppLocalDateTime(dateStamp, schedule.time_of_day).getTime();
+    return Math.abs(new Date(check.scheduled_at).getTime() - expectedAt) < 60_000;
+  });
+
   const profileMap = await getProfileMap(
-    ((checksRes.data ?? []) as MealCheck[]).map((item) => item.completed_by).filter(Boolean) as string[]
+    visibleChecks.map((item) => item.completed_by).filter(Boolean) as string[]
   );
 
   return {
-    meals: (mealsRes.data ?? []) as Meal[],
-    schedules: schedulesRes.data ?? [],
-    checks: ((checksRes.data ?? []) as MealCheck[]).map((item) => ({
+    meals,
+    schedules,
+    checks: visibleChecks.map((item) => ({
       ...item,
       completed_by_name: item.completed_by ? profileMap.get(item.completed_by) ?? "Familia" : null
     }))

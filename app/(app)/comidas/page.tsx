@@ -9,7 +9,7 @@ export default async function MealsPage() {
 
   return (
     <AppShell title="Comidas" subtitle="Plan y checks del día" context={context}>
-      <MealPlanner context={context} meals={data.meals} checks={data.checks} />
+      <MealPlanner context={context} meals={data.meals} schedules={data.schedules} checks={data.checks} />
     </AppShell>
   );
 }

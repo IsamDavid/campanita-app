@@ -13,11 +13,11 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { formatClock } from "@/lib/dates";
+import { formatClock, fromAppLocalDateTime, getAppDateKey, getAppWeekday } from "@/lib/dates";
 import { isDemoMode } from "@/lib/demo";
 import { mealSchema } from "@/lib/validations";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
-import type { AppContext, Meal, MealCheck } from "@/types/app";
+import type { AppContext, Meal, MealCheck, MealSchedule } from "@/types/app";
 
 const weekdays = [
   { value: 0, label: "D" },
@@ -32,11 +32,13 @@ const weekdays = [
 export function MealPlanner({
   context,
   meals,
-  checks
+  checks,
+  schedules
 }: {
   context: AppContext;
   meals: Meal[];
   checks: Array<MealCheck & { completed_by_name?: string | null }>;
+  schedules?: MealSchedule[];
 }) {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -51,6 +53,20 @@ export function MealPlanner({
   const [error, setError] = useState<string | null>(null);
 
   const mealsById = useMemo(() => new Map(meals.map((meal) => [meal.id, meal])), [meals]);
+  const schedulesByMealId = useMemo(() => new Map((schedules ?? []).map((schedule) => [schedule.meal_id, schedule])), [schedules]);
+  const visibleChecks = useMemo(() => {
+    const todayKey = getAppDateKey();
+    const weekday = getAppWeekday();
+
+    return checks.filter((check) => {
+      const meal = mealsById.get(check.meal_id);
+      const schedule = schedulesByMealId.get(check.meal_id);
+      if (!meal?.active || !schedule?.active || !schedule.days_of_week.includes(weekday)) return false;
+
+      const expectedAt = fromAppLocalDateTime(todayKey, schedule.time_of_day).getTime();
+      return Math.abs(new Date(check.scheduled_at).getTime() - expectedAt) < 60_000;
+    });
+  }, [checks, mealsById, schedulesByMealId]);
 
   async function handleCreate(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -202,11 +218,12 @@ export function MealPlanner({
 
       <section className="space-y-3">
         <h2 className="text-lg font-bold">Checks de hoy</h2>
-        {checks.length ? (
+        {visibleChecks.length ? (
           <div className="space-y-3">
-            {checks.map((check) => {
+            {visibleChecks.map((check) => {
               const meal = mealsById.get(check.meal_id);
-              if (!meal) return null;
+              const schedule = schedulesByMealId.get(check.meal_id);
+              if (!meal || !schedule?.active || !meal.active) return null;
 
               return (
                 <PendingTaskCard
@@ -246,7 +263,9 @@ export function MealPlanner({
               <MealCard
                 key={meal.id}
                 meal={meal}
-                check={checks.find((item) => item.meal_id === meal.id)}
+                schedule={schedulesByMealId.get(meal.id)}
+                check={visibleChecks.find((item) => item.meal_id === meal.id)}
+                role={context.role}
               />
             ))}
           </div>
