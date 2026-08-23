@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toLocalDatetimeValue } from "@/lib/dates";
 import { isDemoMode } from "@/lib/demo";
-import { buildStoragePath, createImageThumbnail, createOptimizedImage, STORAGE_BUCKETS } from "@/lib/storage";
+import { STORAGE_BUCKETS, uploadPhoto } from "@/lib/storage";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
 import { stoolLogSchema } from "@/lib/validations";
 import type { AppContext } from "@/types/app";
@@ -75,63 +75,25 @@ export function StoolLogForm({ context }: { context: AppContext }) {
     let thumbnailPath: string | null = null;
 
     if (file) {
-      photoPath = buildStoragePath({
-        householdId: context.household.id,
-        petId: context.pet.id,
-        category: "stool",
-        fileName: file.name
-      });
-
-      const upload = await supabase.storage
-        .from(STORAGE_BUCKETS.stoolPhotos)
-        .upload(photoPath, file, { upsert: false });
-
-      if (upload.error) {
-        setSaving(false);
-        setError(upload.error.message);
-        return;
-      }
-
       try {
-        const optimized = await createOptimizedImage(file);
-        optimizedPhotoPath = buildStoragePath({
+        const uploaded = await uploadPhoto({
+          client: supabase,
+          bucket: STORAGE_BUCKETS.stoolPhotos,
           householdId: context.household.id,
           petId: context.pet.id,
-          category: "stool/optimized",
-          fileName: optimized.name
+          category: "stool",
+          file,
+          withThumbnail: true
         });
-
-        const optimizedUpload = await supabase.storage
-          .from(STORAGE_BUCKETS.stoolPhotos)
-          .upload(optimizedPhotoPath, optimized, {
-            contentType: optimized.type,
-            upsert: false
-          });
-
-        if (optimizedUpload.error) {
-          optimizedPhotoPath = null;
-        }
-
-        const thumbnail = await createImageThumbnail(file);
-        thumbnailPath = buildStoragePath({
-          householdId: context.household.id,
-          petId: context.pet.id,
-          category: "stool/thumbnails",
-          fileName: thumbnail.name
-        });
-
-        const thumbnailUpload = await supabase.storage
-          .from(STORAGE_BUCKETS.stoolPhotos)
-          .upload(thumbnailPath, thumbnail, {
-            contentType: thumbnail.type,
-            upsert: false
-          });
-
-        if (thumbnailUpload.error) {
-          thumbnailPath = null;
-        }
-      } catch {
-        thumbnailPath = null;
+        photoPath = uploaded.photoPath;
+        // Both columns point at the same optimized object: the original is no
+        // longer stored, so there is nothing for them to differ about.
+        optimizedPhotoPath = uploaded.photoPath;
+        thumbnailPath = uploaded.thumbnailPath;
+      } catch (uploadError) {
+        setSaving(false);
+        setError(uploadError instanceof Error ? uploadError.message : "No se pudo subir la foto.");
+        return;
       }
     }
 

@@ -12,7 +12,7 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toLocalDatetimeValue } from "@/lib/dates";
 import { isDemoMode } from "@/lib/demo";
-import { buildStoragePath, STORAGE_BUCKETS } from "@/lib/storage";
+import { STORAGE_BUCKETS, uploadPhoto } from "@/lib/storage";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
 import { symptomLogSchema } from "@/lib/validations";
 import type { AppContext } from "@/types/app";
@@ -70,23 +70,19 @@ export function SymptomLogForm({ context }: { context: AppContext }) {
     let photoPath: string | null = null;
 
     if (file) {
-      photoPath = buildStoragePath({
-        householdId: context.household.id,
-        petId: context.pet.id,
-        category: type,
-        fileName: file.name
-      });
-
-      const upload = await supabase.storage
-        .from(STORAGE_BUCKETS.symptomPhotos)
-        .upload(photoPath, file, {
-          contentType: file.type,
-          upsert: false
+      try {
+        const uploaded = await uploadPhoto({
+          client: supabase,
+          bucket: STORAGE_BUCKETS.symptomPhotos,
+          householdId: context.household.id,
+          petId: context.pet.id,
+          category: type,
+          file
         });
-
-      if (upload.error) {
+        photoPath = uploaded.photoPath;
+      } catch (uploadError) {
         setSaving(false);
-        setError(upload.error.message);
+        setError(uploadError instanceof Error ? uploadError.message : "No se pudo subir la foto.");
         return;
       }
     }

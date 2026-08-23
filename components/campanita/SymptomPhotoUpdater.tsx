@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FormField } from "@/components/ui/form-field";
-import { buildStoragePath, STORAGE_BUCKETS } from "@/lib/storage";
+import { STORAGE_BUCKETS, uploadPhoto } from "@/lib/storage";
 import { isDemoMode } from "@/lib/demo";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
 import type { AppContext } from "@/types/app";
@@ -42,23 +42,20 @@ export function SymptomPhotoUpdater({
     setMessage(null);
 
     const supabase = getSupabaseBrowserClient();
-    const photoPath = buildStoragePath({
-      householdId: context.household.id,
-      petId: context.pet.id,
-      category: recordType,
-      fileName: file.name
-    });
-
-    const upload = await supabase.storage
-      .from(STORAGE_BUCKETS.symptomPhotos)
-      .upload(photoPath, file, {
-        contentType: file.type,
-        upsert: false
+    let photoPath: string;
+    try {
+      const uploaded = await uploadPhoto({
+        client: supabase,
+        bucket: STORAGE_BUCKETS.symptomPhotos,
+        householdId: context.household.id,
+        petId: context.pet.id,
+        category: recordType,
+        file
       });
-
-    if (upload.error) {
+      photoPath = uploaded.photoPath;
+    } catch (uploadError) {
       setSaving(false);
-      setMessage(upload.error.message);
+      setMessage(uploadError instanceof Error ? uploadError.message : "No se pudo subir la foto.");
       return;
     }
 

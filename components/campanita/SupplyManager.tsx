@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { isDemoMode } from "@/lib/demo";
-import { buildStoragePath, STORAGE_BUCKETS } from "@/lib/storage";
+import { STORAGE_BUCKETS, uploadPhoto } from "@/lib/storage";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
 import { supplySchema } from "@/lib/validations";
 import type { AppContext, Supply } from "@/types/app";
@@ -69,23 +69,19 @@ export function SupplyManager({
     let photoPath: string | null = null;
 
     if (photo) {
-      photoPath = buildStoragePath({
-        householdId: context.household.id,
-        petId: context.pet.id,
-        category: "supplies",
-        fileName: photo.name
-      });
-
-      const upload = await supabase.storage
-        .from(STORAGE_BUCKETS.petMedia)
-        .upload(photoPath, photo, {
-          contentType: photo.type,
-          upsert: false
+      try {
+        const uploaded = await uploadPhoto({
+          client: supabase,
+          bucket: STORAGE_BUCKETS.petMedia,
+          householdId: context.household.id,
+          petId: context.pet.id,
+          category: "supplies",
+          file: photo
         });
-
-      if (upload.error) {
+        photoPath = uploaded.photoPath;
+      } catch (uploadError) {
         setSaving(false);
-        setError(upload.error.message);
+        setError(uploadError instanceof Error ? uploadError.message : "No se pudo subir la foto.");
         return;
       }
     }

@@ -12,7 +12,7 @@ import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { isDemoMode } from "@/lib/demo";
-import { buildStoragePath, STORAGE_BUCKETS } from "@/lib/storage";
+import { STORAGE_BUCKETS, uploadPhoto } from "@/lib/storage";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
 import { vaccineSchema, vetVisitSchema } from "@/lib/validations";
 import type { AppContext, Vaccine, VetVisit } from "@/types/app";
@@ -92,18 +92,24 @@ export function VetManager({
     }
 
     if (visit.documentFile && visit.documentTitle) {
-      const filePath = buildStoragePath({
-        householdId: context.household.id,
-        petId: context.pet.id,
-        category: "documents",
-        fileName: visit.documentFile.name
-      });
+      let filePath: string | null = null;
+      try {
+        const uploaded = await uploadPhoto({
+          client: supabase,
+          bucket: STORAGE_BUCKETS.documents,
+          householdId: context.household.id,
+          petId: context.pet.id,
+          category: "documents",
+          file: visit.documentFile,
+          // Vet reports carry small print. A PDF is stored untouched.
+          maxSize: 2000
+        });
+        filePath = uploaded.photoPath;
+      } catch {
+        filePath = null;
+      }
 
-      const upload = await supabase.storage
-        .from(STORAGE_BUCKETS.documents)
-        .upload(filePath, visit.documentFile, { upsert: false });
-
-      if (!upload.error) {
+      if (filePath) {
         await supabase.from("documents").insert({
           household_id: context.household.id,
           pet_id: context.pet.id,

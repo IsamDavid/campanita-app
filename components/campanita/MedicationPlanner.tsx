@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { formatClock } from "@/lib/dates";
 import { isDemoMode } from "@/lib/demo";
-import { buildStoragePath, STORAGE_BUCKETS } from "@/lib/storage";
+import { STORAGE_BUCKETS, uploadPhoto } from "@/lib/storage";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
 import { medicationSchema } from "@/lib/validations";
 import type { AppContext, Medication, MedicationCheck } from "@/types/app";
@@ -103,19 +103,22 @@ export function MedicationPlanner({
     let prescriptionPath: string | null = null;
 
     if (file) {
-      prescriptionPath = buildStoragePath({
-        householdId: context.household.id,
-        petId: context.pet.id,
-        category: "prescriptions",
-        fileName: file.name
-      });
-      const upload = await supabase.storage
-        .from(STORAGE_BUCKETS.prescriptions)
-        .upload(prescriptionPath, file, { upsert: false });
-
-      if (upload.error) {
+      try {
+        const uploaded = await uploadPhoto({
+          client: supabase,
+          bucket: STORAGE_BUCKETS.prescriptions,
+          householdId: context.household.id,
+          petId: context.pet.id,
+          category: "prescriptions",
+          file,
+          // A prescription has to stay legible: small handwriting survives 2000px
+          // but not 1200. A PDF is stored untouched.
+          maxSize: 2000
+        });
+        prescriptionPath = uploaded.photoPath;
+      } catch (uploadError) {
         setSaving(false);
-        setError(upload.error.message);
+        setError(uploadError instanceof Error ? uploadError.message : "No se pudo subir el archivo.");
         return;
       }
     }

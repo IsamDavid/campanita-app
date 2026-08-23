@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
 import { isDemoMode } from "@/lib/demo";
-import { buildStoragePath, STORAGE_BUCKETS } from "@/lib/storage";
+import { STORAGE_BUCKETS, uploadPhoto } from "@/lib/storage";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
 import type { AppContext } from "@/types/app";
 
@@ -61,23 +61,21 @@ export function QuickActions({
     let photoPath: string | null = null;
 
     if (photo) {
-      photoPath = buildStoragePath({
-        householdId: context.household.id,
-        petId: context.pet.id,
-        category: "vomito",
-        fileName: photo.name
-      });
-
-      const upload = await supabase.storage
-        .from(STORAGE_BUCKETS.symptomPhotos)
-        .upload(photoPath, photo, {
-          contentType: photo.type,
-          upsert: false
+      try {
+        const uploaded = await uploadPhoto({
+          client: supabase,
+          bucket: STORAGE_BUCKETS.symptomPhotos,
+          householdId: context.household.id,
+          petId: context.pet.id,
+          category: "vomito",
+          file: photo
         });
-
-      if (upload.error) {
+        photoPath = uploaded.photoPath;
+      } catch (uploadError) {
         setSavingType(null);
-        setMessage(upload.error.message);
+        setMessage(
+          uploadError instanceof Error ? uploadError.message : "No se pudo subir la foto."
+        );
         return;
       }
     }
