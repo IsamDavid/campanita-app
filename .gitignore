@@ -12,3 +12,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# Estado local del CLI de Supabase, no es parte del proyecto
+supabase/.temp/
