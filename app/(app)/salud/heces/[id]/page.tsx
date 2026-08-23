@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { SymptomLogEditor } from "@/components/campanita/SymptomLogEditor";
 import { AppShell } from "@/components/layout/AppShell";
 import { Card } from "@/components/ui/card";
 import { requireAppContext } from "@/lib/auth";
@@ -93,6 +94,14 @@ export default async function StoolLogDetailPage({
           </div>
           <p className="text-xs text-on-surface-variant">Registrado por {record.created_by_name}</p>
         </Card>
+
+        <SymptomLogEditor
+          context={context}
+          recordId={record.id}
+          occurredAt={record.occurred_at}
+          notes={record.notes}
+          tableName="stool_logs"
+        />
 
         {navigation.length > 1 ? (
           <section className="space-y-3">

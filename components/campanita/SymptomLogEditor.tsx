@@ -18,12 +18,14 @@ export function SymptomLogEditor({
   context,
   recordId,
   occurredAt,
-  notes
+  notes,
+  tableName = "symptom_logs"
 }: {
   context: AppContext;
   recordId: string;
   occurredAt: string;
   notes?: string | null;
+  tableName?: "symptom_logs" | "stool_logs";
 }) {
   const router = useRouter();
   const [dateTime, setDateTime] = useState(toLocalDatetimeValue(new Date(occurredAt)));
@@ -50,7 +52,7 @@ export function SymptomLogEditor({
 
     const supabase = getSupabaseBrowserClient();
     const { error } = await supabase
-      .from("symptom_logs")
+      .from(tableName)
       .update({
         occurred_at: new Date(dateTime).toISOString(),
         notes: draftNotes
